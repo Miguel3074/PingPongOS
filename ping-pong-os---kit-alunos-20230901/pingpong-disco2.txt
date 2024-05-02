@@ -1,0 +1,1333 @@
+main: inicio
+Disco contem 256 blocos de 64 bytes cada
+T03 movendo  8 blocos entre bloco   0 e bloco 255
+T03 vai ler bloco   0
+T04 movendo  8 blocos entre bloco   8 e bloco 247
+T04 vai ler bloco   8
+T05 movendo  8 blocos entre bloco  16 e bloco 239
+T05 vai ler bloco  16
+T06 movendo  8 blocos entre bloco  24 e bloco 231
+T06 vai ler bloco  24
+T07 movendo  8 blocos entre bloco  32 e bloco 223
+T07 vai ler bloco  32
+T08 movendo  8 blocos entre bloco  40 e bloco 215
+T08 vai ler bloco  40
+T09 movendo  8 blocos entre bloco  48 e bloco 207
+T09 vai ler bloco  48
+T10 movendo  8 blocos entre bloco  56 e bloco 199
+T10 vai ler bloco  56
+T11 movendo  8 blocos entre bloco  64 e bloco 191
+T11 vai ler bloco  64
+T12 movendo  8 blocos entre bloco  72 e bloco 183
+T12 vai ler bloco  72
+T13 movendo  8 blocos entre bloco  80 e bloco 175
+T13 vai ler bloco  80
+T14 movendo  8 blocos entre bloco  88 e bloco 167
+T14 vai ler bloco  88
+T15 movendo  8 blocos entre bloco  96 e bloco 159
+T15 vai ler bloco  96
+T16 movendo  8 blocos entre bloco 104 e bloco 151
+T16 vai ler bloco 104
+T17 movendo  8 blocos entre bloco 112 e bloco 143
+T17 vai ler bloco 112
+T18 movendo  8 blocos entre bloco 120 e bloco 135
+T18 vai ler bloco 120
+T03 leu bloco   0
+T03 vai ler bloco 255
+T04 leu bloco   8
+T04 vai ler bloco 247
+T05 leu bloco  16
+T05 vai ler bloco 239
+T06 leu bloco  24
+T06 vai ler bloco 231
+T07 leu bloco  32
+T07 vai ler bloco 223
+T08 leu bloco  40
+T08 vai ler bloco 215
+T09 leu bloco  48
+T09 vai ler bloco 207
+T10 leu bloco  56
+T10 vai ler bloco 199
+T11 leu bloco  64
+T11 vai ler bloco 191
+T12 leu bloco  72
+T12 vai ler bloco 183
+T13 leu bloco  80
+T13 vai ler bloco 175
+T14 leu bloco  88
+T14 vai ler bloco 167
+T15 leu bloco  96
+T15 vai ler bloco 159
+T16 leu bloco 104
+T16 vai ler bloco 151
+T17 leu bloco 112
+T17 vai ler bloco 143
+T18 leu bloco 120
+T18 vai ler bloco 135
+T03 leu bloco 255
+T03 bloco   0 tem: [<--bloco 0000-------------------------------------------------->]
+T03 bloco 255 tem: [<--bloco 0255-------------------------------------------------->]
+T03 vai escrever bloco 255
+T04 leu bloco 247
+T04 bloco   8 tem: [<--bloco 0008-------------------------------------------------->]
+T04 bloco 247 tem: [<--bloco 0247-------------------------------------------------->]
+T04 vai escrever bloco 247
+T05 leu bloco 239
+T05 bloco  16 tem: [<--bloco 0016-------------------------------------------------->]
+T05 bloco 239 tem: [<--bloco 0239-------------------------------------------------->]
+T05 vai escrever bloco 239
+T06 leu bloco 231
+T06 bloco  24 tem: [<--bloco 0024-------------------------------------------------->]
+T06 bloco 231 tem: [<--bloco 0231-------------------------------------------------->]
+T06 vai escrever bloco 231
+T07 leu bloco 223
+T07 bloco  32 tem: [<--bloco 0032-------------------------------------------------->]
+T07 bloco 223 tem: [<--bloco 0223-------------------------------------------------->]
+T07 vai escrever bloco 223
+T08 leu bloco 215
+T08 bloco  40 tem: [<--bloco 0040-------------------------------------------------->]
+T08 bloco 215 tem: [<--bloco 0215-------------------------------------------------->]
+T08 vai escrever bloco 215
+T09 leu bloco 207
+T09 bloco  48 tem: [<--bloco 0048-------------------------------------------------->]
+T09 bloco 207 tem: [<--bloco 0207-------------------------------------------------->]
+T09 vai escrever bloco 207
+T10 leu bloco 199
+T10 bloco  56 tem: [<--bloco 0056-------------------------------------------------->]
+T10 bloco 199 tem: [<--bloco 0199-------------------------------------------------->]
+T10 vai escrever bloco 199
+T11 leu bloco 191
+T11 bloco  64 tem: [<--bloco 0064-------------------------------------------------->]
+T11 bloco 191 tem: [<--bloco 0191-------------------------------------------------->]
+T11 vai escrever bloco 191
+T12 leu bloco 183
+T12 bloco  72 tem: [<--bloco 0072-------------------------------------------------->]
+T12 bloco 183 tem: [<--bloco 0183-------------------------------------------------->]
+T12 vai escrever bloco 183
+T13 leu bloco 175
+T13 bloco  80 tem: [<--bloco 0080-------------------------------------------------->]
+T13 bloco 175 tem: [<--bloco 0175-------------------------------------------------->]
+T13 vai escrever bloco 175
+T14 leu bloco 167
+T14 bloco  88 tem: [<--bloco 0088-------------------------------------------------->]
+T14 bloco 167 tem: [<--bloco 0167-------------------------------------------------->]
+T14 vai escrever bloco 167
+T15 leu bloco 159
+T15 bloco  96 tem: [<--bloco 0096-------------------------------------------------->]
+T15 bloco 159 tem: [<--bloco 0159-------------------------------------------------->]
+T15 vai escrever bloco 159
+T16 leu bloco 151
+T16 bloco 104 tem: [<--bloco 0104-------------------------------------------------->]
+T16 bloco 151 tem: [<--bloco 0151-------------------------------------------------->]
+T16 vai escrever bloco 151
+T17 leu bloco 143
+T17 bloco 112 tem: [<--bloco 0112-------------------------------------------------->]
+T17 bloco 143 tem: [<--bloco 0143-------------------------------------------------->]
+T17 vai escrever bloco 143
+T18 leu bloco 135
+T18 bloco 120 tem: [<--bloco 0120-------------------------------------------------->]
+T18 bloco 135 tem: [<--bloco 0135-------------------------------------------------->]
+T18 vai escrever bloco 135
+T03 escreveu bloco 255
+T03 vai escrever bloco   0
+T04 escreveu bloco 247
+T04 vai escrever bloco   8
+T05 escreveu bloco 239
+T05 vai escrever bloco  16
+T06 escreveu bloco 231
+T06 vai escrever bloco  24
+T07 escreveu bloco 223
+T07 vai escrever bloco  32
+T08 escreveu bloco 215
+T08 vai escrever bloco  40
+T09 escreveu bloco 207
+T09 vai escrever bloco  48
+T10 escreveu bloco 199
+T10 vai escrever bloco  56
+T11 escreveu bloco 191
+T11 vai escrever bloco  64
+T12 escreveu bloco 183
+T12 vai escrever bloco  72
+T13 escreveu bloco 175
+T13 vai escrever bloco  80
+T14 escreveu bloco 167
+T14 vai escrever bloco  88
+T15 escreveu bloco 159
+T15 vai escrever bloco  96
+T16 escreveu bloco 151
+T16 vai escrever bloco 104
+T17 escreveu bloco 143
+T17 vai escrever bloco 112
+T18 escreveu bloco 135
+T18 vai escrever bloco 120
+T03 escreveu bloco   0
+T03 vai ler bloco   1
+T04 escreveu bloco   8
+T04 vai ler bloco   9
+T05 escreveu bloco  16
+T05 vai ler bloco  17
+T06 escreveu bloco  24
+T06 vai ler bloco  25
+T07 escreveu bloco  32
+T07 vai ler bloco  33
+T08 escreveu bloco  40
+T08 vai ler bloco  41
+T09 escreveu bloco  48
+T09 vai ler bloco  49
+T10 escreveu bloco  56
+T10 vai ler bloco  57
+T11 escreveu bloco  64
+T11 vai ler bloco  65
+T12 escreveu bloco  72
+T12 vai ler bloco  73
+T13 escreveu bloco  80
+T13 vai ler bloco  81
+T14 escreveu bloco  88
+T14 vai ler bloco  89
+T15 escreveu bloco  96
+T15 vai ler bloco  97
+T16 escreveu bloco 104
+T16 vai ler bloco 105
+T17 escreveu bloco 112
+T17 vai ler bloco 113
+T18 escreveu bloco 120
+T18 vai ler bloco 121
+T03 leu bloco   1
+T03 vai ler bloco 254
+T04 leu bloco   9
+T04 vai ler bloco 246
+T05 leu bloco  17
+T05 vai ler bloco 238
+T06 leu bloco  25
+T06 vai ler bloco 230
+T07 leu bloco  33
+T07 vai ler bloco 222
+T08 leu bloco  41
+T08 vai ler bloco 214
+T09 leu bloco  49
+T09 vai ler bloco 206
+T10 leu bloco  57
+T10 vai ler bloco 198
+T11 leu bloco  65
+T11 vai ler bloco 190
+T12 leu bloco  73
+T12 vai ler bloco 182
+T13 leu bloco  81
+T13 vai ler bloco 174
+T14 leu bloco  89
+T14 vai ler bloco 166
+T15 leu bloco  97
+T15 vai ler bloco 158
+T16 leu bloco 105
+T16 vai ler bloco 150
+T17 leu bloco 113
+T17 vai ler bloco 142
+T18 leu bloco 121
+T18 vai ler bloco 134
+T03 leu bloco 254
+T03 bloco   1 tem: [<--bloco 0001-------------------------------------------------->]
+T03 bloco 254 tem: [<--bloco 0254-------------------------------------------------->]
+T03 vai escrever bloco 254
+T04 leu bloco 246
+T04 bloco   9 tem: [<--bloco 0009-------------------------------------------------->]
+T04 bloco 246 tem: [<--bloco 0246-------------------------------------------------->]
+T04 vai escrever bloco 246
+T05 leu bloco 238
+T05 bloco  17 tem: [<--bloco 0017-------------------------------------------------->]
+T05 bloco 238 tem: [<--bloco 0238-------------------------------------------------->]
+T05 vai escrever bloco 238
+T06 leu bloco 230
+T06 bloco  25 tem: [<--bloco 0025-------------------------------------------------->]
+T06 bloco 230 tem: [<--bloco 0230-------------------------------------------------->]
+T06 vai escrever bloco 230
+T07 leu bloco 222
+T07 bloco  33 tem: [<--bloco 0033-------------------------------------------------->]
+T07 bloco 222 tem: [<--bloco 0222-------------------------------------------------->]
+T07 vai escrever bloco 222
+T08 leu bloco 214
+T08 bloco  41 tem: [<--bloco 0041-------------------------------------------------->]
+T08 bloco 214 tem: [<--bloco 0214-------------------------------------------------->]
+T08 vai escrever bloco 214
+T09 leu bloco 206
+T09 bloco  49 tem: [<--bloco 0049-------------------------------------------------->]
+T09 bloco 206 tem: [<--bloco 0206-------------------------------------------------->]
+T09 vai escrever bloco 206
+T10 leu bloco 198
+T10 bloco  57 tem: [<--bloco 0057-------------------------------------------------->]
+T10 bloco 198 tem: [<--bloco 0198-------------------------------------------------->]
+T10 vai escrever bloco 198
+T11 leu bloco 190
+T11 bloco  65 tem: [<--bloco 0065-------------------------------------------------->]
+T11 bloco 190 tem: [<--bloco 0190-------------------------------------------------->]
+T11 vai escrever bloco 190
+T12 leu bloco 182
+T12 bloco  73 tem: [<--bloco 0073-------------------------------------------------->]
+T12 bloco 182 tem: [<--bloco 0182-------------------------------------------------->]
+T12 vai escrever bloco 182
+T13 leu bloco 174
+T13 bloco  81 tem: [<--bloco 0081-------------------------------------------------->]
+T13 bloco 174 tem: [<--bloco 0174-------------------------------------------------->]
+T13 vai escrever bloco 174
+T14 leu bloco 166
+T14 bloco  89 tem: [<--bloco 0089-------------------------------------------------->]
+T14 bloco 166 tem: [<--bloco 0166-------------------------------------------------->]
+T14 vai escrever bloco 166
+T15 leu bloco 158
+T15 bloco  97 tem: [<--bloco 0097-------------------------------------------------->]
+T15 bloco 158 tem: [<--bloco 0158-------------------------------------------------->]
+T15 vai escrever bloco 158
+T16 leu bloco 150
+T16 bloco 105 tem: [<--bloco 0105-------------------------------------------------->]
+T16 bloco 150 tem: [<--bloco 0150-------------------------------------------------->]
+T16 vai escrever bloco 150
+T17 leu bloco 142
+T17 bloco 113 tem: [<--bloco 0113-------------------------------------------------->]
+T17 bloco 142 tem: [<--bloco 0142-------------------------------------------------->]
+T17 vai escrever bloco 142
+T18 leu bloco 134
+T18 bloco 121 tem: [<--bloco 0121-------------------------------------------------->]
+T18 bloco 134 tem: [<--bloco 0134-------------------------------------------------->]
+T18 vai escrever bloco 134
+T03 escreveu bloco 254
+T03 vai escrever bloco   1
+T04 escreveu bloco 246
+T04 vai escrever bloco   9
+T05 escreveu bloco 238
+T05 vai escrever bloco  17
+T06 escreveu bloco 230
+T06 vai escrever bloco  25
+T07 escreveu bloco 222
+T07 vai escrever bloco  33
+T08 escreveu bloco 214
+T08 vai escrever bloco  41
+T09 escreveu bloco 206
+T09 vai escrever bloco  49
+T10 escreveu bloco 198
+T10 vai escrever bloco  57
+T11 escreveu bloco 190
+T11 vai escrever bloco  65
+T12 escreveu bloco 182
+T12 vai escrever bloco  73
+T13 escreveu bloco 174
+T13 vai escrever bloco  81
+T14 escreveu bloco 166
+T14 vai escrever bloco  89
+T15 escreveu bloco 158
+T15 vai escrever bloco  97
+T16 escreveu bloco 150
+T16 vai escrever bloco 105
+T17 escreveu bloco 142
+T17 vai escrever bloco 113
+T18 escreveu bloco 134
+T18 vai escrever bloco 121
+T03 escreveu bloco   1
+T03 vai ler bloco   2
+T04 escreveu bloco   9
+T04 vai ler bloco  10
+T05 escreveu bloco  17
+T05 vai ler bloco  18
+T06 escreveu bloco  25
+T06 vai ler bloco  26
+T07 escreveu bloco  33
+T07 vai ler bloco  34
+T08 escreveu bloco  41
+T08 vai ler bloco  42
+T09 escreveu bloco  49
+T09 vai ler bloco  50
+T10 escreveu bloco  57
+T10 vai ler bloco  58
+T11 escreveu bloco  65
+T11 vai ler bloco  66
+T12 escreveu bloco  73
+T12 vai ler bloco  74
+T13 escreveu bloco  81
+T13 vai ler bloco  82
+T14 escreveu bloco  89
+T14 vai ler bloco  90
+T15 escreveu bloco  97
+T15 vai ler bloco  98
+T16 escreveu bloco 105
+T16 vai ler bloco 106
+T17 escreveu bloco 113
+T17 vai ler bloco 114
+T18 escreveu bloco 121
+T18 vai ler bloco 122
+T03 leu bloco   2
+T03 vai ler bloco 253
+T04 leu bloco  10
+T04 vai ler bloco 245
+T05 leu bloco  18
+T05 vai ler bloco 237
+T06 leu bloco  26
+T06 vai ler bloco 229
+T07 leu bloco  34
+T07 vai ler bloco 221
+T08 leu bloco  42
+T08 vai ler bloco 213
+T09 leu bloco  50
+T09 vai ler bloco 205
+T10 leu bloco  58
+T10 vai ler bloco 197
+T11 leu bloco  66
+T11 vai ler bloco 189
+T12 leu bloco  74
+T12 vai ler bloco 181
+T13 leu bloco  82
+T13 vai ler bloco 173
+T14 leu bloco  90
+T14 vai ler bloco 165
+T15 leu bloco  98
+T15 vai ler bloco 157
+T16 leu bloco 106
+T16 vai ler bloco 149
+T17 leu bloco 114
+T17 vai ler bloco 141
+T18 leu bloco 122
+T18 vai ler bloco 133
+T03 leu bloco 253
+T03 bloco   2 tem: [<--bloco 0002-------------------------------------------------->]
+T03 bloco 253 tem: [<--bloco 0253-------------------------------------------------->]
+T03 vai escrever bloco 253
+T04 leu bloco 245
+T04 bloco  10 tem: [<--bloco 0010-------------------------------------------------->]
+T04 bloco 245 tem: [<--bloco 0245-------------------------------------------------->]
+T04 vai escrever bloco 245
+T05 leu bloco 237
+T05 bloco  18 tem: [<--bloco 0018-------------------------------------------------->]
+T05 bloco 237 tem: [<--bloco 0237-------------------------------------------------->]
+T05 vai escrever bloco 237
+T06 leu bloco 229
+T06 bloco  26 tem: [<--bloco 0026-------------------------------------------------->]
+T06 bloco 229 tem: [<--bloco 0229-------------------------------------------------->]
+T06 vai escrever bloco 229
+T07 leu bloco 221
+T07 bloco  34 tem: [<--bloco 0034-------------------------------------------------->]
+T07 bloco 221 tem: [<--bloco 0221-------------------------------------------------->]
+T07 vai escrever bloco 221
+T08 leu bloco 213
+T08 bloco  42 tem: [<--bloco 0042-------------------------------------------------->]
+T08 bloco 213 tem: [<--bloco 0213-------------------------------------------------->]
+T08 vai escrever bloco 213
+T09 leu bloco 205
+T09 bloco  50 tem: [<--bloco 0050-------------------------------------------------->]
+T09 bloco 205 tem: [<--bloco 0205-------------------------------------------------->]
+T09 vai escrever bloco 205
+T10 leu bloco 197
+T10 bloco  58 tem: [<--bloco 0058-------------------------------------------------->]
+T10 bloco 197 tem: [<--bloco 0197-------------------------------------------------->]
+T10 vai escrever bloco 197
+T11 leu bloco 189
+T11 bloco  66 tem: [<--bloco 0066-------------------------------------------------->]
+T11 bloco 189 tem: [<--bloco 0189-------------------------------------------------->]
+T11 vai escrever bloco 189
+T12 leu bloco 181
+T12 bloco  74 tem: [<--bloco 0074-------------------------------------------------->]
+T12 bloco 181 tem: [<--bloco 0181-------------------------------------------------->]
+T12 vai escrever bloco 181
+T13 leu bloco 173
+T13 bloco  82 tem: [<--bloco 0082-------------------------------------------------->]
+T13 bloco 173 tem: [<--bloco 0173-------------------------------------------------->]
+T13 vai escrever bloco 173
+T14 leu bloco 165
+T14 bloco  90 tem: [<--bloco 0090-------------------------------------------------->]
+T14 bloco 165 tem: [<--bloco 0165-------------------------------------------------->]
+T14 vai escrever bloco 165
+T15 leu bloco 157
+T15 bloco  98 tem: [<--bloco 0098-------------------------------------------------->]
+T15 bloco 157 tem: [<--bloco 0157-------------------------------------------------->]
+T15 vai escrever bloco 157
+T16 leu bloco 149
+T16 bloco 106 tem: [<--bloco 0106-------------------------------------------------->]
+T16 bloco 149 tem: [<--bloco 0149-------------------------------------------------->]
+T16 vai escrever bloco 149
+T17 leu bloco 141
+T17 bloco 114 tem: [<--bloco 0114-------------------------------------------------->]
+T17 bloco 141 tem: [<--bloco 0141-------------------------------------------------->]
+T17 vai escrever bloco 141
+T18 leu bloco 133
+T18 bloco 122 tem: [<--bloco 0122-------------------------------------------------->]
+T18 bloco 133 tem: [<--bloco 0133-------------------------------------------------->]
+T18 vai escrever bloco 133
+T03 escreveu bloco 253
+T03 vai escrever bloco   2
+T04 escreveu bloco 245
+T04 vai escrever bloco  10
+T05 escreveu bloco 237
+T05 vai escrever bloco  18
+T06 escreveu bloco 229
+T06 vai escrever bloco  26
+T07 escreveu bloco 221
+T07 vai escrever bloco  34
+T08 escreveu bloco 213
+T08 vai escrever bloco  42
+T09 escreveu bloco 205
+T09 vai escrever bloco  50
+T10 escreveu bloco 197
+T10 vai escrever bloco  58
+T11 escreveu bloco 189
+T11 vai escrever bloco  66
+T12 escreveu bloco 181
+T12 vai escrever bloco  74
+T13 escreveu bloco 173
+T13 vai escrever bloco  82
+T14 escreveu bloco 165
+T14 vai escrever bloco  90
+T15 escreveu bloco 157
+T15 vai escrever bloco  98
+T16 escreveu bloco 149
+T16 vai escrever bloco 106
+T17 escreveu bloco 141
+T17 vai escrever bloco 114
+T18 escreveu bloco 133
+T18 vai escrever bloco 122
+T03 escreveu bloco   2
+T03 vai ler bloco   3
+T04 escreveu bloco  10
+T04 vai ler bloco  11
+T05 escreveu bloco  18
+T05 vai ler bloco  19
+T06 escreveu bloco  26
+T06 vai ler bloco  27
+T07 escreveu bloco  34
+T07 vai ler bloco  35
+T08 escreveu bloco  42
+T08 vai ler bloco  43
+T09 escreveu bloco  50
+T09 vai ler bloco  51
+T10 escreveu bloco  58
+T10 vai ler bloco  59
+T11 escreveu bloco  66
+T11 vai ler bloco  67
+T12 escreveu bloco  74
+T12 vai ler bloco  75
+T13 escreveu bloco  82
+T13 vai ler bloco  83
+T14 escreveu bloco  90
+T14 vai ler bloco  91
+T15 escreveu bloco  98
+T15 vai ler bloco  99
+T16 escreveu bloco 106
+T16 vai ler bloco 107
+T17 escreveu bloco 114
+T17 vai ler bloco 115
+T18 escreveu bloco 122
+T18 vai ler bloco 123
+T03 leu bloco   3
+T03 vai ler bloco 252
+T04 leu bloco  11
+T04 vai ler bloco 244
+T05 leu bloco  19
+T05 vai ler bloco 236
+T06 leu bloco  27
+T06 vai ler bloco 228
+T07 leu bloco  35
+T07 vai ler bloco 220
+T08 leu bloco  43
+T08 vai ler bloco 212
+T09 leu bloco  51
+T09 vai ler bloco 204
+T10 leu bloco  59
+T10 vai ler bloco 196
+T11 leu bloco  67
+T11 vai ler bloco 188
+T12 leu bloco  75
+T12 vai ler bloco 180
+T13 leu bloco  83
+T13 vai ler bloco 172
+T14 leu bloco  91
+T14 vai ler bloco 164
+T15 leu bloco  99
+T15 vai ler bloco 156
+T16 leu bloco 107
+T16 vai ler bloco 148
+T17 leu bloco 115
+T17 vai ler bloco 140
+T18 leu bloco 123
+T18 vai ler bloco 132
+T03 leu bloco 252
+T03 bloco   3 tem: [<--bloco 0003-------------------------------------------------->]
+T03 bloco 252 tem: [<--bloco 0252-------------------------------------------------->]
+T03 vai escrever bloco 252
+T04 leu bloco 244
+T04 bloco  11 tem: [<--bloco 0011-------------------------------------------------->]
+T04 bloco 244 tem: [<--bloco 0244-------------------------------------------------->]
+T04 vai escrever bloco 244
+T05 leu bloco 236
+T05 bloco  19 tem: [<--bloco 0019-------------------------------------------------->]
+T05 bloco 236 tem: [<--bloco 0236-------------------------------------------------->]
+T05 vai escrever bloco 236
+T06 leu bloco 228
+T06 bloco  27 tem: [<--bloco 0027-------------------------------------------------->]
+T06 bloco 228 tem: [<--bloco 0228-------------------------------------------------->]
+T06 vai escrever bloco 228
+T07 leu bloco 220
+T07 bloco  35 tem: [<--bloco 0035-------------------------------------------------->]
+T07 bloco 220 tem: [<--bloco 0220-------------------------------------------------->]
+T07 vai escrever bloco 220
+T08 leu bloco 212
+T08 bloco  43 tem: [<--bloco 0043-------------------------------------------------->]
+T08 bloco 212 tem: [<--bloco 0212-------------------------------------------------->]
+T08 vai escrever bloco 212
+T09 leu bloco 204
+T09 bloco  51 tem: [<--bloco 0051-------------------------------------------------->]
+T09 bloco 204 tem: [<--bloco 0204-------------------------------------------------->]
+T09 vai escrever bloco 204
+T10 leu bloco 196
+T10 bloco  59 tem: [<--bloco 0059-------------------------------------------------->]
+T10 bloco 196 tem: [<--bloco 0196-------------------------------------------------->]
+T10 vai escrever bloco 196
+T11 leu bloco 188
+T11 bloco  67 tem: [<--bloco 0067-------------------------------------------------->]
+T11 bloco 188 tem: [<--bloco 0188-------------------------------------------------->]
+T11 vai escrever bloco 188
+T12 leu bloco 180
+T12 bloco  75 tem: [<--bloco 0075-------------------------------------------------->]
+T12 bloco 180 tem: [<--bloco 0180-------------------------------------------------->]
+T12 vai escrever bloco 180
+T13 leu bloco 172
+T13 bloco  83 tem: [<--bloco 0083-------------------------------------------------->]
+T13 bloco 172 tem: [<--bloco 0172-------------------------------------------------->]
+T13 vai escrever bloco 172
+T14 leu bloco 164
+T14 bloco  91 tem: [<--bloco 0091-------------------------------------------------->]
+T14 bloco 164 tem: [<--bloco 0164-------------------------------------------------->]
+T14 vai escrever bloco 164
+T15 leu bloco 156
+T15 bloco  99 tem: [<--bloco 0099-------------------------------------------------->]
+T15 bloco 156 tem: [<--bloco 0156-------------------------------------------------->]
+T15 vai escrever bloco 156
+T16 leu bloco 148
+T16 bloco 107 tem: [<--bloco 0107-------------------------------------------------->]
+T16 bloco 148 tem: [<--bloco 0148-------------------------------------------------->]
+T16 vai escrever bloco 148
+T17 leu bloco 140
+T17 bloco 115 tem: [<--bloco 0115-------------------------------------------------->]
+T17 bloco 140 tem: [<--bloco 0140-------------------------------------------------->]
+T17 vai escrever bloco 140
+T18 leu bloco 132
+T18 bloco 123 tem: [<--bloco 0123-------------------------------------------------->]
+T18 bloco 132 tem: [<--bloco 0132-------------------------------------------------->]
+T18 vai escrever bloco 132
+T03 escreveu bloco 252
+T03 vai escrever bloco   3
+T04 escreveu bloco 244
+T04 vai escrever bloco  11
+T05 escreveu bloco 236
+T05 vai escrever bloco  19
+T06 escreveu bloco 228
+T06 vai escrever bloco  27
+T07 escreveu bloco 220
+T07 vai escrever bloco  35
+T08 escreveu bloco 212
+T08 vai escrever bloco  43
+T09 escreveu bloco 204
+T09 vai escrever bloco  51
+T10 escreveu bloco 196
+T10 vai escrever bloco  59
+T11 escreveu bloco 188
+T11 vai escrever bloco  67
+T12 escreveu bloco 180
+T12 vai escrever bloco  75
+T13 escreveu bloco 172
+T13 vai escrever bloco  83
+T14 escreveu bloco 164
+T14 vai escrever bloco  91
+T15 escreveu bloco 156
+T15 vai escrever bloco  99
+T16 escreveu bloco 148
+T16 vai escrever bloco 107
+T17 escreveu bloco 140
+T17 vai escrever bloco 115
+T18 escreveu bloco 132
+T18 vai escrever bloco 123
+T03 escreveu bloco   3
+T03 vai ler bloco   4
+T04 escreveu bloco  11
+T04 vai ler bloco  12
+T05 escreveu bloco  19
+T05 vai ler bloco  20
+T06 escreveu bloco  27
+T06 vai ler bloco  28
+T07 escreveu bloco  35
+T07 vai ler bloco  36
+T08 escreveu bloco  43
+T08 vai ler bloco  44
+T09 escreveu bloco  51
+T09 vai ler bloco  52
+T10 escreveu bloco  59
+T10 vai ler bloco  60
+T11 escreveu bloco  67
+T11 vai ler bloco  68
+T12 escreveu bloco  75
+T12 vai ler bloco  76
+T13 escreveu bloco  83
+T13 vai ler bloco  84
+T14 escreveu bloco  91
+T14 vai ler bloco  92
+T15 escreveu bloco  99
+T15 vai ler bloco 100
+T16 escreveu bloco 107
+T16 vai ler bloco 108
+T17 escreveu bloco 115
+T17 vai ler bloco 116
+T18 escreveu bloco 123
+T18 vai ler bloco 124
+T03 leu bloco   4
+T03 vai ler bloco 251
+T04 leu bloco  12
+T04 vai ler bloco 243
+T05 leu bloco  20
+T05 vai ler bloco 235
+T06 leu bloco  28
+T06 vai ler bloco 227
+T07 leu bloco  36
+T07 vai ler bloco 219
+T08 leu bloco  44
+T08 vai ler bloco 211
+T09 leu bloco  52
+T09 vai ler bloco 203
+T10 leu bloco  60
+T10 vai ler bloco 195
+T11 leu bloco  68
+T11 vai ler bloco 187
+T12 leu bloco  76
+T12 vai ler bloco 179
+T13 leu bloco  84
+T13 vai ler bloco 171
+T14 leu bloco  92
+T14 vai ler bloco 163
+T15 leu bloco 100
+T15 vai ler bloco 155
+T16 leu bloco 108
+T16 vai ler bloco 147
+T17 leu bloco 116
+T17 vai ler bloco 139
+T18 leu bloco 124
+T18 vai ler bloco 131
+T03 leu bloco 251
+T03 bloco   4 tem: [<--bloco 0004-------------------------------------------------->]
+T03 bloco 251 tem: [<--bloco 0251-------------------------------------------------->]
+T03 vai escrever bloco 251
+T04 leu bloco 243
+T04 bloco  12 tem: [<--bloco 0012-------------------------------------------------->]
+T04 bloco 243 tem: [<--bloco 0243-------------------------------------------------->]
+T04 vai escrever bloco 243
+T05 leu bloco 235
+T05 bloco  20 tem: [<--bloco 0020-------------------------------------------------->]
+T05 bloco 235 tem: [<--bloco 0235-------------------------------------------------->]
+T05 vai escrever bloco 235
+T06 leu bloco 227
+T06 bloco  28 tem: [<--bloco 0028-------------------------------------------------->]
+T06 bloco 227 tem: [<--bloco 0227-------------------------------------------------->]
+T06 vai escrever bloco 227
+T07 leu bloco 219
+T07 bloco  36 tem: [<--bloco 0036-------------------------------------------------->]
+T07 bloco 219 tem: [<--bloco 0219-------------------------------------------------->]
+T07 vai escrever bloco 219
+T08 leu bloco 211
+T08 bloco  44 tem: [<--bloco 0044-------------------------------------------------->]
+T08 bloco 211 tem: [<--bloco 0211-------------------------------------------------->]
+T08 vai escrever bloco 211
+T09 leu bloco 203
+T09 bloco  52 tem: [<--bloco 0052-------------------------------------------------->]
+T09 bloco 203 tem: [<--bloco 0203-------------------------------------------------->]
+T09 vai escrever bloco 203
+T10 leu bloco 195
+T10 bloco  60 tem: [<--bloco 0060-------------------------------------------------->]
+T10 bloco 195 tem: [<--bloco 0195-------------------------------------------------->]
+T10 vai escrever bloco 195
+T11 leu bloco 187
+T11 bloco  68 tem: [<--bloco 0068-------------------------------------------------->]
+T11 bloco 187 tem: [<--bloco 0187-------------------------------------------------->]
+T11 vai escrever bloco 187
+T12 leu bloco 179
+T12 bloco  76 tem: [<--bloco 0076-------------------------------------------------->]
+T12 bloco 179 tem: [<--bloco 0179-------------------------------------------------->]
+T12 vai escrever bloco 179
+T13 leu bloco 171
+T13 bloco  84 tem: [<--bloco 0084-------------------------------------------------->]
+T13 bloco 171 tem: [<--bloco 0171-------------------------------------------------->]
+T13 vai escrever bloco 171
+T14 leu bloco 163
+T14 bloco  92 tem: [<--bloco 0092-------------------------------------------------->]
+T14 bloco 163 tem: [<--bloco 0163-------------------------------------------------->]
+T14 vai escrever bloco 163
+T15 leu bloco 155
+T15 bloco 100 tem: [<--bloco 0100-------------------------------------------------->]
+T15 bloco 155 tem: [<--bloco 0155-------------------------------------------------->]
+T15 vai escrever bloco 155
+T16 leu bloco 147
+T16 bloco 108 tem: [<--bloco 0108-------------------------------------------------->]
+T16 bloco 147 tem: [<--bloco 0147-------------------------------------------------->]
+T16 vai escrever bloco 147
+T17 leu bloco 139
+T17 bloco 116 tem: [<--bloco 0116-------------------------------------------------->]
+T17 bloco 139 tem: [<--bloco 0139-------------------------------------------------->]
+T17 vai escrever bloco 139
+T18 leu bloco 131
+T18 bloco 124 tem: [<--bloco 0124-------------------------------------------------->]
+T18 bloco 131 tem: [<--bloco 0131-------------------------------------------------->]
+T18 vai escrever bloco 131
+T03 escreveu bloco 251
+T03 vai escrever bloco   4
+T04 escreveu bloco 243
+T04 vai escrever bloco  12
+T05 escreveu bloco 235
+T05 vai escrever bloco  20
+T06 escreveu bloco 227
+T06 vai escrever bloco  28
+T07 escreveu bloco 219
+T07 vai escrever bloco  36
+T08 escreveu bloco 211
+T08 vai escrever bloco  44
+T09 escreveu bloco 203
+T09 vai escrever bloco  52
+T10 escreveu bloco 195
+T10 vai escrever bloco  60
+T11 escreveu bloco 187
+T11 vai escrever bloco  68
+T12 escreveu bloco 179
+T12 vai escrever bloco  76
+T13 escreveu bloco 171
+T13 vai escrever bloco  84
+T14 escreveu bloco 163
+T14 vai escrever bloco  92
+T15 escreveu bloco 155
+T15 vai escrever bloco 100
+T16 escreveu bloco 147
+T16 vai escrever bloco 108
+T17 escreveu bloco 139
+T17 vai escrever bloco 116
+T18 escreveu bloco 131
+T18 vai escrever bloco 124
+T03 escreveu bloco   4
+T03 vai ler bloco   5
+T04 escreveu bloco  12
+T04 vai ler bloco  13
+T05 escreveu bloco  20
+T05 vai ler bloco  21
+T06 escreveu bloco  28
+T06 vai ler bloco  29
+T07 escreveu bloco  36
+T07 vai ler bloco  37
+T08 escreveu bloco  44
+T08 vai ler bloco  45
+T09 escreveu bloco  52
+T09 vai ler bloco  53
+T10 escreveu bloco  60
+T10 vai ler bloco  61
+T11 escreveu bloco  68
+T11 vai ler bloco  69
+T12 escreveu bloco  76
+T12 vai ler bloco  77
+T13 escreveu bloco  84
+T13 vai ler bloco  85
+T14 escreveu bloco  92
+T14 vai ler bloco  93
+T15 escreveu bloco 100
+T15 vai ler bloco 101
+T16 escreveu bloco 108
+T16 vai ler bloco 109
+T17 escreveu bloco 116
+T17 vai ler bloco 117
+T18 escreveu bloco 124
+T18 vai ler bloco 125
+T03 leu bloco   5
+T03 vai ler bloco 250
+T04 leu bloco  13
+T04 vai ler bloco 242
+T05 leu bloco  21
+T05 vai ler bloco 234
+T06 leu bloco  29
+T06 vai ler bloco 226
+T07 leu bloco  37
+T07 vai ler bloco 218
+T08 leu bloco  45
+T08 vai ler bloco 210
+T09 leu bloco  53
+T09 vai ler bloco 202
+T10 leu bloco  61
+T10 vai ler bloco 194
+T11 leu bloco  69
+T11 vai ler bloco 186
+T12 leu bloco  77
+T12 vai ler bloco 178
+T13 leu bloco  85
+T13 vai ler bloco 170
+T14 leu bloco  93
+T14 vai ler bloco 162
+T15 leu bloco 101
+T15 vai ler bloco 154
+T16 leu bloco 109
+T16 vai ler bloco 146
+T17 leu bloco 117
+T17 vai ler bloco 138
+T18 leu bloco 125
+T18 vai ler bloco 130
+T03 leu bloco 250
+T03 bloco   5 tem: [<--bloco 0005-------------------------------------------------->]
+T03 bloco 250 tem: [<--bloco 0250-------------------------------------------------->]
+T03 vai escrever bloco 250
+T04 leu bloco 242
+T04 bloco  13 tem: [<--bloco 0013-------------------------------------------------->]
+T04 bloco 242 tem: [<--bloco 0242-------------------------------------------------->]
+T04 vai escrever bloco 242
+T05 leu bloco 234
+T05 bloco  21 tem: [<--bloco 0021-------------------------------------------------->]
+T05 bloco 234 tem: [<--bloco 0234-------------------------------------------------->]
+T05 vai escrever bloco 234
+T06 leu bloco 226
+T06 bloco  29 tem: [<--bloco 0029-------------------------------------------------->]
+T06 bloco 226 tem: [<--bloco 0226-------------------------------------------------->]
+T06 vai escrever bloco 226
+T07 leu bloco 218
+T07 bloco  37 tem: [<--bloco 0037-------------------------------------------------->]
+T07 bloco 218 tem: [<--bloco 0218-------------------------------------------------->]
+T07 vai escrever bloco 218
+T08 leu bloco 210
+T08 bloco  45 tem: [<--bloco 0045-------------------------------------------------->]
+T08 bloco 210 tem: [<--bloco 0210-------------------------------------------------->]
+T08 vai escrever bloco 210
+T09 leu bloco 202
+T09 bloco  53 tem: [<--bloco 0053-------------------------------------------------->]
+T09 bloco 202 tem: [<--bloco 0202-------------------------------------------------->]
+T09 vai escrever bloco 202
+T10 leu bloco 194
+T10 bloco  61 tem: [<--bloco 0061-------------------------------------------------->]
+T10 bloco 194 tem: [<--bloco 0194-------------------------------------------------->]
+T10 vai escrever bloco 194
+T11 leu bloco 186
+T11 bloco  69 tem: [<--bloco 0069-------------------------------------------------->]
+T11 bloco 186 tem: [<--bloco 0186-------------------------------------------------->]
+T11 vai escrever bloco 186
+T12 leu bloco 178
+T12 bloco  77 tem: [<--bloco 0077-------------------------------------------------->]
+T12 bloco 178 tem: [<--bloco 0178-------------------------------------------------->]
+T12 vai escrever bloco 178
+T13 leu bloco 170
+T13 bloco  85 tem: [<--bloco 0085-------------------------------------------------->]
+T13 bloco 170 tem: [<--bloco 0170-------------------------------------------------->]
+T13 vai escrever bloco 170
+T14 leu bloco 162
+T14 bloco  93 tem: [<--bloco 0093-------------------------------------------------->]
+T14 bloco 162 tem: [<--bloco 0162-------------------------------------------------->]
+T14 vai escrever bloco 162
+T15 leu bloco 154
+T15 bloco 101 tem: [<--bloco 0101-------------------------------------------------->]
+T15 bloco 154 tem: [<--bloco 0154-------------------------------------------------->]
+T15 vai escrever bloco 154
+T16 leu bloco 146
+T16 bloco 109 tem: [<--bloco 0109-------------------------------------------------->]
+T16 bloco 146 tem: [<--bloco 0146-------------------------------------------------->]
+T16 vai escrever bloco 146
+T17 leu bloco 138
+T17 bloco 117 tem: [<--bloco 0117-------------------------------------------------->]
+T17 bloco 138 tem: [<--bloco 0138-------------------------------------------------->]
+T17 vai escrever bloco 138
+T18 leu bloco 130
+T18 bloco 125 tem: [<--bloco 0125-------------------------------------------------->]
+T18 bloco 130 tem: [<--bloco 0130-------------------------------------------------->]
+T18 vai escrever bloco 130
+T03 escreveu bloco 250
+T03 vai escrever bloco   5
+T04 escreveu bloco 242
+T04 vai escrever bloco  13
+T05 escreveu bloco 234
+T05 vai escrever bloco  21
+T06 escreveu bloco 226
+T06 vai escrever bloco  29
+T07 escreveu bloco 218
+T07 vai escrever bloco  37
+T08 escreveu bloco 210
+T08 vai escrever bloco  45
+T09 escreveu bloco 202
+T09 vai escrever bloco  53
+T10 escreveu bloco 194
+T10 vai escrever bloco  61
+T11 escreveu bloco 186
+T11 vai escrever bloco  69
+T12 escreveu bloco 178
+T12 vai escrever bloco  77
+T13 escreveu bloco 170
+T13 vai escrever bloco  85
+T14 escreveu bloco 162
+T14 vai escrever bloco  93
+T15 escreveu bloco 154
+T15 vai escrever bloco 101
+T16 escreveu bloco 146
+T16 vai escrever bloco 109
+T17 escreveu bloco 138
+T17 vai escrever bloco 117
+T18 escreveu bloco 130
+T18 vai escrever bloco 125
+T03 escreveu bloco   5
+T03 vai ler bloco   6
+T04 escreveu bloco  13
+T04 vai ler bloco  14
+T05 escreveu bloco  21
+T05 vai ler bloco  22
+T06 escreveu bloco  29
+T06 vai ler bloco  30
+T07 escreveu bloco  37
+T07 vai ler bloco  38
+T08 escreveu bloco  45
+T08 vai ler bloco  46
+T09 escreveu bloco  53
+T09 vai ler bloco  54
+T10 escreveu bloco  61
+T10 vai ler bloco  62
+T11 escreveu bloco  69
+T11 vai ler bloco  70
+T12 escreveu bloco  77
+T12 vai ler bloco  78
+T13 escreveu bloco  85
+T13 vai ler bloco  86
+T14 escreveu bloco  93
+T14 vai ler bloco  94
+T15 escreveu bloco 101
+T15 vai ler bloco 102
+T16 escreveu bloco 109
+T16 vai ler bloco 110
+T17 escreveu bloco 117
+T17 vai ler bloco 118
+T18 escreveu bloco 125
+T18 vai ler bloco 126
+T03 leu bloco   6
+T03 vai ler bloco 249
+T04 leu bloco  14
+T04 vai ler bloco 241
+T05 leu bloco  22
+T05 vai ler bloco 233
+T06 leu bloco  30
+T06 vai ler bloco 225
+T07 leu bloco  38
+T07 vai ler bloco 217
+T08 leu bloco  46
+T08 vai ler bloco 209
+T09 leu bloco  54
+T09 vai ler bloco 201
+T10 leu bloco  62
+T10 vai ler bloco 193
+T11 leu bloco  70
+T11 vai ler bloco 185
+T12 leu bloco  78
+T12 vai ler bloco 177
+T13 leu bloco  86
+T13 vai ler bloco 169
+T14 leu bloco  94
+T14 vai ler bloco 161
+T15 leu bloco 102
+T15 vai ler bloco 153
+T16 leu bloco 110
+T16 vai ler bloco 145
+T17 leu bloco 118
+T17 vai ler bloco 137
+T18 leu bloco 126
+T18 vai ler bloco 129
+T03 leu bloco 249
+T03 bloco   6 tem: [<--bloco 0006-------------------------------------------------->]
+T03 bloco 249 tem: [<--bloco 0249-------------------------------------------------->]
+T03 vai escrever bloco 249
+T04 leu bloco 241
+T04 bloco  14 tem: [<--bloco 0014-------------------------------------------------->]
+T04 bloco 241 tem: [<--bloco 0241-------------------------------------------------->]
+T04 vai escrever bloco 241
+T05 leu bloco 233
+T05 bloco  22 tem: [<--bloco 0022-------------------------------------------------->]
+T05 bloco 233 tem: [<--bloco 0233-------------------------------------------------->]
+T05 vai escrever bloco 233
+T06 leu bloco 225
+T06 bloco  30 tem: [<--bloco 0030-------------------------------------------------->]
+T06 bloco 225 tem: [<--bloco 0225-------------------------------------------------->]
+T06 vai escrever bloco 225
+T07 leu bloco 217
+T07 bloco  38 tem: [<--bloco 0038-------------------------------------------------->]
+T07 bloco 217 tem: [<--bloco 0217-------------------------------------------------->]
+T07 vai escrever bloco 217
+T08 leu bloco 209
+T08 bloco  46 tem: [<--bloco 0046-------------------------------------------------->]
+T08 bloco 209 tem: [<--bloco 0209-------------------------------------------------->]
+T08 vai escrever bloco 209
+T09 leu bloco 201
+T09 bloco  54 tem: [<--bloco 0054-------------------------------------------------->]
+T09 bloco 201 tem: [<--bloco 0201-------------------------------------------------->]
+T09 vai escrever bloco 201
+T10 leu bloco 193
+T10 bloco  62 tem: [<--bloco 0062-------------------------------------------------->]
+T10 bloco 193 tem: [<--bloco 0193-------------------------------------------------->]
+T10 vai escrever bloco 193
+T11 leu bloco 185
+T11 bloco  70 tem: [<--bloco 0070-------------------------------------------------->]
+T11 bloco 185 tem: [<--bloco 0185-------------------------------------------------->]
+T11 vai escrever bloco 185
+T12 leu bloco 177
+T12 bloco  78 tem: [<--bloco 0078-------------------------------------------------->]
+T12 bloco 177 tem: [<--bloco 0177-------------------------------------------------->]
+T12 vai escrever bloco 177
+T13 leu bloco 169
+T13 bloco  86 tem: [<--bloco 0086-------------------------------------------------->]
+T13 bloco 169 tem: [<--bloco 0169-------------------------------------------------->]
+T13 vai escrever bloco 169
+T14 leu bloco 161
+T14 bloco  94 tem: [<--bloco 0094-------------------------------------------------->]
+T14 bloco 161 tem: [<--bloco 0161-------------------------------------------------->]
+T14 vai escrever bloco 161
+T15 leu bloco 153
+T15 bloco 102 tem: [<--bloco 0102-------------------------------------------------->]
+T15 bloco 153 tem: [<--bloco 0153-------------------------------------------------->]
+T15 vai escrever bloco 153
+T16 leu bloco 145
+T16 bloco 110 tem: [<--bloco 0110-------------------------------------------------->]
+T16 bloco 145 tem: [<--bloco 0145-------------------------------------------------->]
+T16 vai escrever bloco 145
+T17 leu bloco 137
+T17 bloco 118 tem: [<--bloco 0118-------------------------------------------------->]
+T17 bloco 137 tem: [<--bloco 0137-------------------------------------------------->]
+T17 vai escrever bloco 137
+T18 leu bloco 129
+T18 bloco 126 tem: [<--bloco 0126-------------------------------------------------->]
+T18 bloco 129 tem: [<--bloco 0129-------------------------------------------------->]
+T18 vai escrever bloco 129
+T03 escreveu bloco 249
+T03 vai escrever bloco   6
+T04 escreveu bloco 241
+T04 vai escrever bloco  14
+T05 escreveu bloco 233
+T05 vai escrever bloco  22
+T06 escreveu bloco 225
+T06 vai escrever bloco  30
+T07 escreveu bloco 217
+T07 vai escrever bloco  38
+T08 escreveu bloco 209
+T08 vai escrever bloco  46
+T09 escreveu bloco 201
+T09 vai escrever bloco  54
+T10 escreveu bloco 193
+T10 vai escrever bloco  62
+T11 escreveu bloco 185
+T11 vai escrever bloco  70
+T12 escreveu bloco 177
+T12 vai escrever bloco  78
+T13 escreveu bloco 169
+T13 vai escrever bloco  86
+T14 escreveu bloco 161
+T14 vai escrever bloco  94
+T15 escreveu bloco 153
+T15 vai escrever bloco 102
+T16 escreveu bloco 145
+T16 vai escrever bloco 110
+T17 escreveu bloco 137
+T17 vai escrever bloco 118
+T18 escreveu bloco 129
+T18 vai escrever bloco 126
+T03 escreveu bloco   6
+T03 vai ler bloco   7
+T04 escreveu bloco  14
+T04 vai ler bloco  15
+T05 escreveu bloco  22
+T05 vai ler bloco  23
+T06 escreveu bloco  30
+T06 vai ler bloco  31
+T07 escreveu bloco  38
+T07 vai ler bloco  39
+T08 escreveu bloco  46
+T08 vai ler bloco  47
+T09 escreveu bloco  54
+T09 vai ler bloco  55
+T10 escreveu bloco  62
+T10 vai ler bloco  63
+T11 escreveu bloco  70
+T11 vai ler bloco  71
+T12 escreveu bloco  78
+T12 vai ler bloco  79
+T13 escreveu bloco  86
+T13 vai ler bloco  87
+T14 escreveu bloco  94
+T14 vai ler bloco  95
+T15 escreveu bloco 102
+T15 vai ler bloco 103
+T16 escreveu bloco 110
+T16 vai ler bloco 111
+T17 escreveu bloco 118
+T17 vai ler bloco 119
+T18 escreveu bloco 126
+T18 vai ler bloco 127
+T03 leu bloco   7
+T03 vai ler bloco 248
+T04 leu bloco  15
+T04 vai ler bloco 240
+T05 leu bloco  23
+T05 vai ler bloco 232
+T06 leu bloco  31
+T06 vai ler bloco 224
+T07 leu bloco  39
+T07 vai ler bloco 216
+T08 leu bloco  47
+T08 vai ler bloco 208
+T09 leu bloco  55
+T09 vai ler bloco 200
+T10 leu bloco  63
+T10 vai ler bloco 192
+T11 leu bloco  71
+T11 vai ler bloco 184
+T12 leu bloco  79
+T12 vai ler bloco 176
+T13 leu bloco  87
+T13 vai ler bloco 168
+T14 leu bloco  95
+T14 vai ler bloco 160
+T15 leu bloco 103
+T15 vai ler bloco 152
+T16 leu bloco 111
+T16 vai ler bloco 144
+T17 leu bloco 119
+T17 vai ler bloco 136
+T18 leu bloco 127
+T18 vai ler bloco 128
+T03 leu bloco 248
+T03 bloco   7 tem: [<--bloco 0007-------------------------------------------------->]
+T03 bloco 248 tem: [<--bloco 0248-------------------------------------------------->]
+T03 vai escrever bloco 248
+T04 leu bloco 240
+T04 bloco  15 tem: [<--bloco 0015-------------------------------------------------->]
+T04 bloco 240 tem: [<--bloco 0240-------------------------------------------------->]
+T04 vai escrever bloco 240
+T05 leu bloco 232
+T05 bloco  23 tem: [<--bloco 0023-------------------------------------------------->]
+T05 bloco 232 tem: [<--bloco 0232-------------------------------------------------->]
+T05 vai escrever bloco 232
+T06 leu bloco 224
+T06 bloco  31 tem: [<--bloco 0031-------------------------------------------------->]
+T06 bloco 224 tem: [<--bloco 0224-------------------------------------------------->]
+T06 vai escrever bloco 224
+T07 leu bloco 216
+T07 bloco  39 tem: [<--bloco 0039-------------------------------------------------->]
+T07 bloco 216 tem: [<--bloco 0216-------------------------------------------------->]
+T07 vai escrever bloco 216
+T08 leu bloco 208
+T08 bloco  47 tem: [<--bloco 0047-------------------------------------------------->]
+T08 bloco 208 tem: [<--bloco 0208-------------------------------------------------->]
+T08 vai escrever bloco 208
+T09 leu bloco 200
+T09 bloco  55 tem: [<--bloco 0055-------------------------------------------------->]
+T09 bloco 200 tem: [<--bloco 0200-------------------------------------------------->]
+T09 vai escrever bloco 200
+T10 leu bloco 192
+T10 bloco  63 tem: [<--bloco 0063-------------------------------------------------->]
+T10 bloco 192 tem: [<--bloco 0192-------------------------------------------------->]
+T10 vai escrever bloco 192
+T11 leu bloco 184
+T11 bloco  71 tem: [<--bloco 0071-------------------------------------------------->]
+T11 bloco 184 tem: [<--bloco 0184-------------------------------------------------->]
+T11 vai escrever bloco 184
+T12 leu bloco 176
+T12 bloco  79 tem: [<--bloco 0079-------------------------------------------------->]
+T12 bloco 176 tem: [<--bloco 0176-------------------------------------------------->]
+T12 vai escrever bloco 176
+T13 leu bloco 168
+T13 bloco  87 tem: [<--bloco 0087-------------------------------------------------->]
+T13 bloco 168 tem: [<--bloco 0168-------------------------------------------------->]
+T13 vai escrever bloco 168
+T14 leu bloco 160
+T14 bloco  95 tem: [<--bloco 0095-------------------------------------------------->]
+T14 bloco 160 tem: [<--bloco 0160-------------------------------------------------->]
+T14 vai escrever bloco 160
+T15 leu bloco 152
+T15 bloco 103 tem: [<--bloco 0103-------------------------------------------------->]
+T15 bloco 152 tem: [<--bloco 0152-------------------------------------------------->]
+T15 vai escrever bloco 152
+T16 leu bloco 144
+T16 bloco 111 tem: [<--bloco 0111-------------------------------------------------->]
+T16 bloco 144 tem: [<--bloco 0144-------------------------------------------------->]
+T16 vai escrever bloco 144
+T17 leu bloco 136
+T17 bloco 119 tem: [<--bloco 0119-------------------------------------------------->]
+T17 bloco 136 tem: [<--bloco 0136-------------------------------------------------->]
+T17 vai escrever bloco 136
+T18 leu bloco 128
+T18 bloco 127 tem: [<--bloco 0127-------------------------------------------------->]
+T18 bloco 128 tem: [<--bloco 0128-------------------------------------------------->]
+T18 vai escrever bloco 128
+T03 escreveu bloco 248
+T03 vai escrever bloco   7
+T04 escreveu bloco 240
+T04 vai escrever bloco  15
+T05 escreveu bloco 232
+T05 vai escrever bloco  23
+T06 escreveu bloco 224
+T06 vai escrever bloco  31
+T07 escreveu bloco 216
+T07 vai escrever bloco  39
+T08 escreveu bloco 208
+T08 vai escrever bloco  47
+T09 escreveu bloco 200
+T09 vai escrever bloco  55
+T10 escreveu bloco 192
+T10 vai escrever bloco  63
+T11 escreveu bloco 184
+T11 vai escrever bloco  71
+T12 escreveu bloco 176
+T12 vai escrever bloco  79
+T13 escreveu bloco 168
+T13 vai escrever bloco  87
+T14 escreveu bloco 160
+T14 vai escrever bloco  95
+T15 escreveu bloco 152
+T15 vai escrever bloco 103
+T16 escreveu bloco 144
+T16 vai escrever bloco 111
+T17 escreveu bloco 136
+T17 vai escrever bloco 119
+T18 escreveu bloco 128
+T18 vai escrever bloco 127
+T03 escreveu bloco   7
+T03 terminou
+Task 3 exit: execution time 29216 ms, processor time     0 ms, 33 activations
+T04 escreveu bloco  15
+T04 terminou
+Task 4 exit: execution time 29269 ms, processor time     1 ms, 33 activations
+T05 escreveu bloco  23
+T05 terminou
+Task 5 exit: execution time 29334 ms, processor time     0 ms, 33 activations
+T06 escreveu bloco  31
+T06 terminou
+Task 6 exit: execution time 29373 ms, processor time     1 ms, 33 activations
+T07 escreveu bloco  39
+T07 terminou
+Task 7 exit: execution time 29428 ms, processor time     0 ms, 33 activations
+T08 escreveu bloco  47
+T08 terminou
+Task 8 exit: execution time 29474 ms, processor time     1 ms, 33 activations
+T09 escreveu bloco  55
+T09 terminou
+Task 9 exit: execution time 29534 ms, processor time     0 ms, 33 activations
+T10 escreveu bloco  63
+T10 terminou
+Task 10 exit: execution time 29593 ms, processor time     2 ms, 33 activations
+T11 escreveu bloco  71
+T11 terminou
+Task 11 exit: execution time 29647 ms, processor time     0 ms, 33 activations
+T12 escreveu bloco  79
+T12 terminou
+Task 12 exit: execution time 29708 ms, processor time     0 ms, 33 activations
+T13 escreveu bloco  87
+T13 terminou
+Task 13 exit: execution time 29758 ms, processor time     1 ms, 33 activations
+T14 escreveu bloco  95
+T14 terminou
+Task 14 exit: execution time 29800 ms, processor time     0 ms, 33 activations
+T15 escreveu bloco 103
+T15 terminou
+Task 15 exit: execution time 29845 ms, processor time     0 ms, 33 activations
+T16 escreveu bloco 111
+T16 terminou
+Task 16 exit: execution time 29904 ms, processor time     1 ms, 33 activations
+T17 escreveu bloco 119
+T17 terminou
+Task 17 exit: execution time 29954 ms, processor time     0 ms, 33 activations
+T18 escreveu bloco 127
+T18 terminou
+Task 18 exit: execution time 29998 ms, processor time     0 ms, 33 activations
+main: fim
+Task 0 exit: execution time 29998 ms, processor time     0 ms, 17 activations
+Task 1 exit: execution time 29998 ms, processor time 29988 ms, 1555 activations
