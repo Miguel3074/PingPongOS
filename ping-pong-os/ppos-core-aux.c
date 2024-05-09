@@ -38,31 +38,31 @@ int task_get_ret(task_t *task){
 
 task_t *scheduler()
 {
-    task_t *proxima_tarefa = readyQueue;
+    task_t *next_task = readyQueue;
     task_t *aux = readyQueue;
-    int shortest_time = task_get_ret(taskExec);
 
-    if (readyQueue == NULL)
+    if (!readyQueue)
         return taskExec;
     else{
+        int shortest_time = task_get_ret(taskExec);
         do{
             if (aux->timeRemaining < shortest_time && aux != taskMain){
                 shortest_time = aux->timeRemaining;
-                proxima_tarefa = aux;
+                next_task = aux;
             }
             aux = aux->next;
         } while (aux != readyQueue);
     }
-    if (proxima_tarefa->execution_time == 0)
-        proxima_tarefa->execution_time = systime();
+    if (next_task->execution_time == 0)
+        next_task->execution_time = systime();
 
-    return proxima_tarefa;
+    return next_task;
 }
 
 void GerenciadorTempo(int signum)
 {
     systemTime++;
-    if (taskExec != NULL){
+    if (taskExec){
         taskExec->running_time++;
         taskExec->timeRemaining--;
     }
@@ -76,26 +76,27 @@ void GerenciadorTempo(int signum)
 
 void temporizador()
 {
+    //timer.c
+
+
     // registra a ação para o sinal de timer SIGALRM
     action.sa_handler = GerenciadorTempo;
-    sigemptyset(&action.sa_mask);
     action.sa_flags = 0;
+    sigemptyset(&action.sa_mask);
     if (sigaction(SIGALRM, &action, 0) < 0){
         perror("Erro em sigaction: ");
         exit(1);
     }
 
     // ajusta valores do temporizador
-    timer.it_value.tv_usec = 1000;
-    timer.it_interval.tv_usec = 1000;
+    timer.it_value.tv_usec = 1000; //  1 ms
+    timer.it_interval.tv_usec = 1000; // 1 ms
 
     // arma o temporizador ITIMER_REAL (vide man setitimer)
     if (setitimer(ITIMER_REAL, &timer, 0) < 0){
         perror("Erro em setitimer: ");
         exit(1);
     }
-
-    //timer.c
 }
 
 // ****************************************************************************
