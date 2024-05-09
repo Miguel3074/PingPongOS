@@ -66,14 +66,15 @@ void GerenciadorTempo(int signum)
         taskExec->running_time++;
         taskExec->timeRemaining--;
     }
-
-    taskExec->quantum--;
-    if (taskExec->quantum == 0){
-        task_yield();
+    if(taskExec != taskDisp && taskExec != taskMain) {
+        taskExec->quantum--;
+        if (taskExec->quantum == 0){
+            task_yield();
+        }
     }
 }
 
-void clock()
+void temporizador()
 {
     // registra a ação para o sinal de timer SIGALRM
     action.sa_handler = GerenciadorTempo;
@@ -107,7 +108,7 @@ void before_ppos_init()
     printf("\ninit - BEFORE");
 #endif
     systemTime = 0;
-    clock();
+    temporizador();
 }
 
 void after_ppos_init()
