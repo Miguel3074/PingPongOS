@@ -26,9 +26,12 @@ typedef struct task_t
 
    // ... (outros campos deve ser adicionados APOS esse comentario)
 
-   // Campos adicionados para manipulação do tempo de execução
-   int EET;                        // Tempo Estimado de Execução
-   int RET;                        // Tempo Restante
+   int running_time;
+   int execution_time;
+   int timeRemaining;
+   int timeExpected;
+   int activations;
+   int quantum;
    
 } task_t ;
 
@@ -71,9 +74,4 @@ typedef struct {
     unsigned char active;
 } mqueue_t ;
 
-void task_set_eet(task_t *task, int et);
-int task_get_eet(task_t *task);
-int task_get_ret(task_t *task);
-
 #endif
-

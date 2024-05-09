@@ -4,15 +4,110 @@
 // ****************************************************************************
 // Coloque aqui as suas modificações, p.ex. includes, defines variáveis,
 // estruturas e funções
+#include <sys/time.h>
+#include <signal.h>
+
+#define QUANTUM 20
+
+struct sigaction action;
+struct itimerval timer;
+int time = 0;
+
+void task_set_eet(task_t *task, int eet){
+    if (task == NULL){
+        taskExec->timeExpected = eet;
+    }
+    else{
+        task->timeExpected = eet;
+        task->timeRemaining = eet;
+    }
+}
+
+int task_get_eet(task_t *task){
+    if (task == NULL)
+        return taskExec->timeExpected;
+    return task->timeExpected;
+}
+
+int task_get_ret(task_t *task){
+    if (task == NULL){
+        return taskExec->timeRemaining;
+    }
+    return task->timeRemaining;
+}
+
+task_t *scheduler()
+{
+    task_t *proxima_tarefa = readyQueue;
+    task_t *aux = readyQueue;
+    int shortest_time = task_get_ret(taskExec);
+
+    if (readyQueue == NULL)
+        return taskExec;
+    else{
+        do{
+            if (aux->timeRemaining < shortest_time && aux != taskMain){
+                shortest_time = aux->timeRemaining;
+                proxima_tarefa = aux;
+            }
+            aux = aux->next;
+        } while (aux != readyQueue);
+    }
+    if (proxima_tarefa->execution_time == 0)
+        proxima_tarefa->execution_time = systime();
+
+    return proxima_tarefa;
+}
+
+void GerenciadorTempo(int signum)
+{
+    systemTime++;
+    if (taskExec != NULL){
+        taskExec->running_time++;
+        taskExec->timeRemaining--;
+    }
+
+    taskExec->quantum--;
+    if (taskExec->quantum == 0){
+        task_yield();
+    }
+}
+
+void clock()
+{
+    // registra a ação para o sinal de timer SIGALRM
+    action.sa_handler = GerenciadorTempo;
+    sigemptyset(&action.sa_mask);
+    action.sa_flags = 0;
+    if (sigaction(SIGALRM, &action, 0) < 0){
+        perror("Erro em sigaction: ");
+        exit(1);
+    }
+
+    // ajusta valores do temporizador
+    timer.it_value.tv_usec = 1000;
+    timer.it_interval.tv_usec = 1000;
+
+    // arma o temporizador ITIMER_REAL (vide man setitimer)
+    if (setitimer(ITIMER_REAL, &timer, 0) < 0){
+        perror("Erro em setitimer: ");
+        exit(1);
+    }
+
+    //timer.c
+}
 
 // ****************************************************************************
 
 void before_ppos_init()
 {
     // put your customization here
+    printf("\nPPOS STARTED\n");
 #ifdef DEBUG
     printf("\ninit - BEFORE");
 #endif
+    systemTime = 0;
+    clock();
 }
 
 void after_ppos_init()
@@ -37,6 +132,12 @@ void after_task_create(task_t *task)
 #ifdef DEBUG
     printf("\ntask_create - AFTER - [%d]", task->id);
 #endif
+    if (task != NULL){
+        task->execution_time = 0;
+        task->activations = 0;
+        task->quantum = QUANTUM;
+        task_set_eet(task, 99999);
+    }
 }
 
 void before_task_exit()
@@ -50,9 +151,16 @@ void before_task_exit()
 void after_task_exit()
 {
     // put your customization here
+    taskExec->execution_time = systime() - taskExec->execution_time;
+    time = systime();
 #ifdef DEBUG
     printf("\ntask_exit - AFTER- [%d]", taskExec->id);
 #endif
+    printf("\nTask %d exit: Execution time: %d ms; Processor time: %d ms; %d activations\n",
+           taskExec->id,
+           taskExec->execution_time,
+           taskExec->running_time,
+           taskExec->activations);
 }
 
 void before_task_switch(task_t *task)
@@ -61,11 +169,13 @@ void before_task_switch(task_t *task)
 #ifdef DEBUG
     printf("\ntask_switch - BEFORE - [%d -> %d]", taskExec->id, task->id);
 #endif
+    task->activations++;
 }
 
 void after_task_switch(task_t *task)
 {
     // put your customization here
+    task->quantum = QUANTUM;
 #ifdef DEBUG
     printf("\ntask_switch - AFTER - [%d -> %d]", taskExec->id, task->id);
 #endif
@@ -438,42 +548,4 @@ int after_mqueue_msgs(mqueue_t *queue)
     printf("\nmqueue_msgs - AFTER - [%d]", taskExec->id);
 #endif
     return 0;
-}
-
-task_t *scheduler()
-{
-    // FCFS scheduler
-    if (readyQueue != NULL)
-    {
-        return readyQueue;
-    }
-    return NULL;
-}
-
-void task_set_eet(task_t *task, int et)
-{
-    if (task == NULL)
-    {
-        task = taskExec; // Define a tarefa atual se a tarefa fornecida for nula
-    }
-    task->EET = et; // Ajusta o tempo estimado de execução da tarefa
-    task->RET = et; // Atualiza também o tempo restante para terminar a execução
-}
-
-int task_get_eet(task_t *task)
-{
-    if (task == NULL)
-    {
-        task = taskExec; // Obtém o tempo estimado de execução da tarefa atual se nula
-    }
-    return task->EET; // Retorna o tempo estimado de execução da tarefa
-}
-
-int task_get_ret(task_t *task)
-{
-    if (task == NULL)
-    {
-        task = taskExec; // Obtém o tempo restante de execução da tarefa atual se nula
-    }
-    return task->RET; // Retorna o tempo restante de execução da tarefa
 }
