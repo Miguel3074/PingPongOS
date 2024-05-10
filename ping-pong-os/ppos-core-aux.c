@@ -36,27 +36,30 @@ int task_get_ret(task_t *task){
     return task->timeRemaining;
 }
 
-task_t *scheduler()
-{
-    task_t *next_task = readyQueue;
-    task_t *aux = readyQueue;
+task_t *scheduler() {
+    task_t *task_return = readyQueue;
+    int i;
+    task_t *aux;
 
-    if (!readyQueue)
-        return taskExec;
-    else{
-        int shortest_time = task_get_ret(taskExec);
-        do{
-            if (aux->timeRemaining < shortest_time && aux != taskMain){
-                shortest_time = aux->timeRemaining;
-                next_task = aux;
+    if (readyQueue != NULL){
+        if (countTasks > 1)
+            aux = readyQueue->next;
+        else
+            aux = readyQueue;
+
+        i = 0;
+        while (i < countTasks) {
+            if (!(aux == taskMain || aux == taskDisp)) {
+                if (task_return == readyQueue || task_get_ret(task_return) > task_get_ret(aux)) {
+                    task_return = aux;
+                }
             }
             aux = aux->next;
-        } while (aux != readyQueue);
+            i++;
+        }
+        return task_return;
     }
-    if (next_task->execution_time == 0)
-        next_task->execution_time = systime();
-
-    return next_task;
+    return readyQueue;
 }
 
 void GerenciadorTempo(int signum)
