@@ -62,12 +62,12 @@ task_t *scheduler()
 void GerenciadorTempo(int signum)
 {
     systemTime++;
-    if (taskExec){
+    if (taskExec != taskMain && taskExec != taskDisp){
         taskExec->running_time++;
         taskExec->timeRemaining--;
-    }
-    if(taskExec != taskDisp && taskExec != taskMain) {
         taskExec->quantum--;
+    }
+    else{
         if (taskExec->quantum == 0){
             task_yield();
         }
@@ -89,8 +89,10 @@ void temporizador()
     }
 
     // ajusta valores do temporizador
-    timer.it_value.tv_usec = 1000; //  1 ms
-    timer.it_interval.tv_usec = 1000; // 1 ms
+    timer.it_value.tv_usec = 1000; 
+    timer.it_value.tv_sec = 0;        
+    timer.it_interval.tv_usec = 1000; 
+    timer.it_interval.tv_sec = 0;  
 
     // arma o temporizador ITIMER_REAL (vide man setitimer)
     if (setitimer(ITIMER_REAL, &timer, 0) < 0){
