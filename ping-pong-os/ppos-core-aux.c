@@ -13,44 +13,55 @@ struct sigaction action;
 struct itimerval timer;
 int time = 0;
 
-void task_set_eet(task_t *task, int eet){
-    if (task == NULL){
+void task_set_eet(task_t *task, int eet)
+{
+    if (task == NULL)
+    {
         taskExec->timeExpected = eet;
     }
-    else{
+    else
+    {
         task->timeExpected = eet;
         task->timeRemaining = eet;
     }
 }
 
-int task_get_eet(task_t *task){
+int task_get_eet(task_t *task)
+{
     if (task == NULL)
         return taskExec->timeExpected;
     return task->timeExpected;
 }
 
-int task_get_ret(task_t *task){
-    if (task == NULL){
+int task_get_ret(task_t *task)
+{
+    if (task == NULL)
+    {
         return taskExec->timeRemaining;
     }
     return task->timeRemaining;
 }
 
-task_t *scheduler() {
+task_t *scheduler()
+{
     task_t *task_return = readyQueue;
     int i;
     task_t *aux;
 
-    if (readyQueue != NULL){
+    if (readyQueue != NULL)
+    {
         if (countTasks > 1)
             aux = readyQueue->next;
         else
             aux = readyQueue;
 
         i = 0;
-        while (i < countTasks) {
-            if (!(aux == taskMain || aux == taskDisp)) {
-                if (task_return == readyQueue || task_get_ret(task_return) > task_get_ret(aux)) {
+        while (i < countTasks)
+        {
+            if (!(aux == taskMain || aux == taskDisp))
+            {
+                if (task_return == readyQueue || task_get_ret(task_return) > task_get_ret(aux))
+                {
                     task_return = aux;
                 }
             }
@@ -65,40 +76,41 @@ task_t *scheduler() {
 void GerenciadorTempo(int signum)
 {
     systemTime++;
-    if (taskExec != taskMain && taskExec != taskDisp){
+    if (taskExec != taskMain && taskExec != taskDisp)
+    {
         taskExec->running_time++;
         taskExec->timeRemaining--;
         taskExec->quantum--;
     }
-    else{
-        if (taskExec->quantum == 0){
-            task_yield();
-        }
+    if (taskExec->quantum == 0)
+    {
+        task_yield();
     }
 }
 
 void temporizador()
 {
-    //timer.c
-
+    // timer.c
 
     // registra a ação para o sinal de timer SIGALRM
     action.sa_handler = GerenciadorTempo;
     action.sa_flags = 0;
     sigemptyset(&action.sa_mask);
-    if (sigaction(SIGALRM, &action, 0) < 0){
+    if (sigaction(SIGALRM, &action, 0) < 0)
+    {
         perror("Erro em sigaction: ");
         exit(1);
     }
 
     // ajusta valores do temporizador
-    timer.it_value.tv_usec = 1000; 
-    timer.it_value.tv_sec = 0;        
-    timer.it_interval.tv_usec = 1000; 
-    timer.it_interval.tv_sec = 0;  
+    timer.it_value.tv_usec = 1000;
+    timer.it_value.tv_sec = 0;
+    timer.it_interval.tv_usec = 1000;
+    timer.it_interval.tv_sec = 0;
 
     // arma o temporizador ITIMER_REAL (vide man setitimer)
-    if (setitimer(ITIMER_REAL, &timer, 0) < 0){
+    if (setitimer(ITIMER_REAL, &timer, 0) < 0)
+    {
         perror("Erro em setitimer: ");
         exit(1);
     }
@@ -110,6 +122,7 @@ void before_ppos_init()
 {
     // put your customization here
     printf("\nPPOS STARTED\n");
+    int disk_mgr_init (&num_blocks, &block_size);
 #ifdef DEBUG
     printf("\ninit - BEFORE");
 #endif
@@ -139,7 +152,8 @@ void after_task_create(task_t *task)
 #ifdef DEBUG
     printf("\ntask_create - AFTER - [%d]", task->id);
 #endif
-    if (task != NULL){
+    if (task != NULL)
+    {
         task->execution_time = 0;
         task->activations = 0;
         task->quantum = QUANTUM;

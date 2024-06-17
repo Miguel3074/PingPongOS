@@ -29,4 +29,6 @@ int disk_block_read (int block, void *buffer) ;
 // escrita de um bloco, do buffer para o disco
 int disk_block_write (int block, void *buffer) ;
 
+void diskDriverBody (void * args)
+
 #endif
