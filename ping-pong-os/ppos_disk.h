@@ -2,6 +2,10 @@
 // Prof. Carlos A. Maziero, DINF UFPR
 // Versão 1.2 -- Julho de 2017
 
+#include <stdio.h>
+#include "ppos.h"
+#include "disk.h"
+
 // interface do gerente de disco rígido (block device driver)
 
 #ifndef __DISK_MGR__
