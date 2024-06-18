@@ -18,21 +18,23 @@
 // estrutura que representa um disco no sistema operacional
 typedef struct
 {
+
+
   // completar com os campos necessarios
-} disk_t ;
+} disk_t;
 
 // inicializacao do gerente de disco
 // retorna -1 em erro ou 0 em sucesso
 // numBlocks: tamanho do disco, em blocos
 // blockSize: tamanho de cada bloco do disco, em bytes
-int disk_mgr_init (int *numBlocks, int *blockSize) ;
+int disk_mgr_init(int *numBlocks, int *blockSize);
 
 // leitura de um bloco, do disco para o buffer
-int disk_block_read (int block, void *buffer) ;
+int disk_block_read(int block, void *buffer);
 
 // escrita de um bloco, do buffer para o disco
-int disk_block_write (int block, void *buffer) ;
+int disk_block_write(int block, void *buffer);
 
-void diskDriverBody (void * args)
+void diskDriverBody(void *args);
 
 #endif

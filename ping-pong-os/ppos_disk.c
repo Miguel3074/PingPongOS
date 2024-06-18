@@ -1,20 +1,58 @@
 #include "ppos_disk.h" 
-;
-int main()
-{
-   printf("AAAAAAAAAA\n");
-    int *num_blocks, *block_size;
-    //ppos_init();
-    //printf("%d",disk_cmd (0, 0, 0));
-    //int disk_mgr_init (&num_blocks, &block_size);
+
+// Fila de operações de disco
+disk_operation_t *disk_queue = NULL;
+
+// Semáforos para gerenciar acesso ao disco
+semaphore_t disk_access;
+semaphore_t disk_manager;
+
+int main() {
+    int num_blocks;   // Variável para armazenar o número de blocos do disco
+    int block_size;   // Variável para armazenar o tamanho de cada bloco do disco
+
+    // Chama a função para inicializar o gerente de disco
+    int result = disk_mgr_init(&num_blocks, &block_size);
+
+    // Verifica se a inicialização foi bem-sucedida
+    if (result == 0) {
+        printf("Disco inicializado com sucesso!\n");
+        printf("Número de blocos: %d\n", num_blocks);
+        printf("Tamanho de cada bloco: %d bytes\n", block_size);
+    } else {
+        printf("Erro ao inicializar o disco.\n");
+    }
 
     return 0;
 }
 
-int disk_mgr_init(int *numBlocks, int *blockSize)
-{
-    return 0;
+
+
+// Função para inicializar o gerente de disco
+int disk_mgr_init(int *numBlocks, int *blockSize) {
+    // Inicializa o disco
+    int result = disk_cmd(DISK_CMD_INIT, 0, 0);
+    if (result < 0) {
+        return -1; // Erro na inicialização do disco
+    }
+
+    // Consulta o tamanho do disco em blocos
+    result = disk_cmd(DISK_CMD_DISKSIZE, 0, 0);
+    if (result < 0) {
+        return -1; // Erro ao consultar o tamanho do disco
+    }
+    *numBlocks = result;
+
+    // Consulta o tamanho de cada bloco do disco em bytes
+    result = disk_cmd(DISK_CMD_BLOCKSIZE, 0, 0);
+    if (result < 0) {
+        return -1; // Erro ao consultar o tamanho do bloco
+    }
+    *blockSize = result;
+
+    return 0; // Sucesso
 }
+
 
 int disk_block_read(int block, void *buffer)
 {
