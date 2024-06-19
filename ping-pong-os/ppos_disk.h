@@ -18,9 +18,11 @@
 // estrutura que representa um disco no sistema operacional
 typedef struct
 {
-
-
   // completar com os campos necessarios
+  int type;     // Tipo da operação (leitura ou escrita)
+  int block;    // Número do bloco a ser lido ou escrito
+  void *buffer; // Buffer de dados para leitura ou escrita
+  task_t *task; // Tarefa associada à operação
 } disk_t;
 
 // inicializacao do gerente de disco
@@ -34,7 +36,5 @@ int disk_block_read(int block, void *buffer);
 
 // escrita de um bloco, do buffer para o disco
 int disk_block_write(int block, void *buffer);
-
-void diskDriverBody(void *args);
 
 #endif

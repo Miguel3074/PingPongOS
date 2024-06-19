@@ -122,7 +122,6 @@ void before_ppos_init()
 {
     // put your customization here
     printf("\nPPOS STARTED\n");
-    int disk_mgr_init (&num_blocks, &block_size);
 #ifdef DEBUG
     printf("\ninit - BEFORE");
 #endif
@@ -570,3 +569,134 @@ int after_mqueue_msgs(mqueue_t *queue)
 #endif
     return 0;
 }
+
+// Cria um semáforo com valor inicial "value"
+int sem_create(semaphore_t *s, int value) {
+    if (s == NULL)
+        return -1;
+
+    s->value = value;
+    s->queue = NULL;
+    s->active = 1;
+
+    return 0;
+}
+
+// Requisita o semáforo
+int sem_down(semaphore_t *s) {
+    if (s == NULL || !s->active)
+        return -1;
+
+    s->value--;
+
+    if (s->value < 0) {
+        task_t *task = taskExec;
+        task->state = 's'; // Suspended state
+        queue_append((queue_t **)&s->queue, (queue_t *)task);
+        task_yield(); // Suspends the current task
+    }
+
+    return 0;
+}
+
+// Libera o semáforo
+int sem_up(semaphore_t *s) {
+    if (s == NULL || !s->active)
+        return -1;
+
+    s->value++;
+
+    if (s->value <= 0) {
+        task_t *task = (task_t *)queue_remove((queue_t **)&s->queue, (queue_t *)s->queue);
+        if (task != NULL)
+            task->state = 'r'; // Ready state
+    }
+
+    return 0;
+}
+
+// Destroi o semáforo, liberando as tarefas bloqueadas
+int sem_destroy(semaphore_t *s) {
+    if (s == NULL)
+        return -1;
+
+    s->active = 0;
+
+    while (s->queue != NULL) {
+        task_t *task = (task_t *)queue_remove((queue_t **)&s->queue, (queue_t *)s->queue);
+        if (task != NULL)
+            task->state = 'r'; // Ready state
+    }
+
+    return 0;
+}
+
+// Implementação do corpo das funções de filas de mensagens
+
+// Cria uma fila para até max mensagens de size bytes cada
+int mqueue_create(mqueue_t *queue, int max, int size) {
+    if (queue == NULL)
+        return -1;
+
+    queue->content = malloc(max * size);
+    if (queue->content == NULL)
+        return -1;
+
+    queue->messageSize = size;
+    queue->maxMessages = max;
+    queue->countMessages = 0;
+
+    sem_create(&queue->sBuffer, 1);
+    sem_create(&queue->sItem, 0);
+    sem_create(&queue->sVaga, max);
+
+    queue->active = 1;
+
+    return 0;
+}
+
+// Envia uma mensagem para a fila
+int mqueue_send(mqueue_t *queue, void *msg) {
+    if (queue == NULL || msg == NULL || !queue->active)
+        return -1;
+
+    sem_down(&queue->sVaga);
+    sem_down(&queue->sBuffer);
+
+    // Copy the message to the queue
+    void *destination = (char *)queue->content + (queue->countMessages * queue->messageSize);
+    memcpy(destination, msg, queue->messageSize);
+
+    queue->countMessages++;
+
+    sem_up(&queue->sBuffer);
+    sem_up(&queue->sItem);
+
+    return 0;
+}
+
+// Recebe uma mensagem da fila
+int mqueue_recv(mqueue_t *queue, void *msg) {
+    if (queue == NULL || msg == NULL || !queue->active)
+        return -1;
+
+    sem_down(&queue->sItem);
+    sem_down(&queue->sBuffer);
+
+    // Copy the message from the queue
+    void *source = (char *)queue->content + ((queue->countMessages - 1) * queue->messageSize);
+    memcpy(msg, source, queue->messageSize);
+
+    queue->countMessages--;
+
+    sem_up(&queue->sBuffer);
+    sem_up(&queue->sVaga);
+
+    return 0;
+}
+
+// Destroi a fila, liberando as tarefas bloqueadas
+int mqueue_destroy(mqueue_t *queue) {
+    if (queue == NULL)
+        return -1;
+}  
