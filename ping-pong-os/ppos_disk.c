@@ -19,6 +19,11 @@ typedef struct {
     task_t *task;     // Tarefa associada à operação
 } DiskOperation;
 
+
+// gcc -o main ppos_disk.c disk.c ppos.h ppos-core-aux.c libppos_static.a -lrt      DEVO RODAR
+// gcc -o main pingpong-disco1.c disk.c ppos.h ppos-core-aux.c libppos_static.a -lrt      TESTE 1
+
+
 void diskDriverBody(void *args);
 
 // Função principal
