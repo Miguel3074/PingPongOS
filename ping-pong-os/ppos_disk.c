@@ -5,61 +5,18 @@
 
 int disk_signal = 0;              // Indica se foi gerado um sinal do disco
 int disk_free = 1;                // Indica se o disco está livre para operações
-int disk_sleeping = 0;            // Indica se o gerente de disco está dormindo
 task_t *task_current = NULL;      // Tarefa corrente
 semaphore_t disk_semaphore;       // Semáforo para controle de acesso ao disco
-task_t disk_manager_task;         // Tarefa do gerente de disco
 mqueue_t disk_operations_queue;   // Fila de operações do disco
+task_t disk_manager_task; // Declarado como variável global
 
-// Estrutura para representar as operações de disco na fila
-typedef struct {
-    int type;         // Tipo da operação (leitura ou escrita)
-    int block;        // Número do bloco a ser lido ou escrito
-    void *buffer;     // Buffer de dados para leitura ou escrita
-    task_t *task;     // Tarefa associada à operação
-} DiskOperation;
-
-
-// gcc -o main ppos_disk.c disk.c ppos.h ppos-core-aux.c libppos_static.a -lrt      DEVO RODAR
+// gcc -o main ppos_disk.c disk.c ppos.h pingpong-disco1.c ppos-core-aux.c libppos_static.a -lrt      DEVO RODAR
 // gcc -o main pingpong-disco1.c disk.c ppos.h ppos-core-aux.c libppos_static.a -lrt      TESTE 1
 
 
 void diskDriverBody(void *args);
 
-// Função principal
-int main()
-{
-    // Inicializa o semáforo de acesso ao disco
-    sem_create(&disk_semaphore, 1);
 
-    // Inicializa a fila de operações do disco com capacidade para 10 operações de tamanho sizeof(DiskOperation)
-    mqueue_create(&disk_operations_queue, 10, sizeof(DiskOperation));
-
-    // Cria a tarefa do gerente de disco
-    task_create(&disk_manager_task, diskDriverBody, NULL);
-
-    int num_blocks; // Variável para armazenar o número de blocos do disco
-    int block_size; // Variável para armazenar o tamanho de cada bloco do disco
-
-    // Chama a função para inicializar o gerente de disco
-    int result = disk_mgr_init(&num_blocks, &block_size);
-
-    // Verifica se a inicialização foi bem-sucedida
-    if (result == 0)
-    {
-        printf("Disco inicializado com sucesso!\n");
-        printf("Número de blocos: %d\n", num_blocks);
-        printf("Tamanho de cada bloco: %d bytes\n", block_size);
-    }
-    else
-    {
-        printf("Erro ao inicializar o disco.\n");
-    }
-
-    return 0;
-}
-
-// Função para inicializar o gerente de disco
 int disk_mgr_init(int *numBlocks, int *blockSize)
 {
     // Inicializa o disco
@@ -85,6 +42,15 @@ int disk_mgr_init(int *numBlocks, int *blockSize)
     }
     *blockSize = result;
 
+    // Inicializa o semáforo de acesso ao disco
+    sem_create(&disk_semaphore, 1);
+
+    // Inicializa a fila de operações do disco
+    mqueue_create(&disk_operations_queue, sizeof(disk_t));
+
+    // Cria a tarefa do gerente de disco
+    task_create(&disk_manager_task, diskDriverBody, NULL);
+
     return 0; // Sucesso
 }
 
@@ -94,7 +60,7 @@ int disk_block_read(int block, void *buffer)
     sem_down(&disk_semaphore);
 
     // Cria uma estrutura para representar a operação de leitura
-    DiskOperation operation;
+    disk_t operation;
     operation.type = DISK_CMD_READ;
     operation.block = block;
     operation.buffer = buffer;
@@ -104,9 +70,8 @@ int disk_block_read(int block, void *buffer)
     mqueue_send(&disk_operations_queue, &operation);
 
     // Se o gerente de disco estiver dormindo, acorda-o
-    if (disk_sleeping)
+    if (task_state(&disk_manager_task) == SUSPENDED)
     {
-        disk_sleeping = 0;
         task_resume(&disk_manager_task);
     }
 
@@ -125,7 +90,7 @@ int disk_block_write(int block, void *buffer)
     sem_down(&disk_semaphore);
 
     // Cria uma estrutura para representar a operação de escrita
-    DiskOperation operation;
+    disk_t operation;
     operation.type = DISK_CMD_WRITE;
     operation.block = block;
     operation.buffer = buffer;
@@ -135,9 +100,8 @@ int disk_block_write(int block, void *buffer)
     mqueue_send(&disk_operations_queue, &operation);
 
     // Se o gerente de disco estiver dormindo, acorda-o
-    if (disk_sleeping)
+    if (task_state(&disk_manager_task) == SUSPENDED)
     {
-        disk_sleeping = 0;
         task_resume(&disk_manager_task);
     }
 
@@ -162,7 +126,7 @@ void diskDriverBody(void *args)
         {
             disk_signal = 0;
             // Acorda a tarefa cujo pedido foi atendido
-            DiskOperation completed_op;
+            disk_t completed_op;
             mqueue_recv(&disk_operations_queue, &completed_op);
             task_resume(completed_op.task);
         }
@@ -171,7 +135,7 @@ void diskDriverBody(void *args)
         if (disk_free && disk_operations_queue.countMessages > 0)
         {
             // Escolhe na fila o pedido a ser atendido (usando FCFS)
-            DiskOperation next_op;
+            disk_t next_op;
             mqueue_recv(&disk_operations_queue, &next_op);
 
             // Solicita ao disco a operação de E/S
@@ -183,6 +147,9 @@ void diskDriverBody(void *args)
             {
                 disk_cmd(DISK_CMD_WRITE, next_op.block, next_op.buffer);
             }
+
+            // Define o disco como ocupado
+            disk_free = 0;
         }
 
         // Libera o semáforo de acesso ao disco
