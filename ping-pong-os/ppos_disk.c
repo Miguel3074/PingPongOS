@@ -46,7 +46,7 @@ int disk_mgr_init(int *numBlocks, int *blockSize)
     sem_create(&disk_semaphore, 1);
 
     // Inicializa a fila de operações do disco
-    mqueue_create(&disk_operations_queue, sizeof(disk_t));
+    mqueue_create(&disk_operations_queue, sizeof(disk_t), 256);
 
     // Cria a tarefa do gerente de disco
     task_create(&disk_manager_task, diskDriverBody, NULL);
@@ -56,9 +56,6 @@ int disk_mgr_init(int *numBlocks, int *blockSize)
 
 int disk_block_read(int block, void *buffer)
 {
-    // Obtém o semáforo de acesso ao disco
-    sem_down(&disk_semaphore);
-
     // Cria uma estrutura para representar a operação de leitura
     disk_t operation;
     operation.type = DISK_CMD_READ;
@@ -66,29 +63,24 @@ int disk_block_read(int block, void *buffer)
     operation.buffer = buffer;
     operation.task = task_current;
 
+    // Obtém o semáforo de acesso ao disco
+    sem_down(&disk_semaphore);
+
     // Adiciona a operação à fila de operações do disco
     mqueue_send(&disk_operations_queue, &operation);
-
-    // Se o gerente de disco estiver dormindo, acorda-o
-    if (task_state(&disk_manager_task) == SUSPENDED)
-    {
-        task_resume(&disk_manager_task);
-    }
 
     // Libera o semáforo de acesso ao disco
     sem_up(&disk_semaphore);
 
-    // Suspende a tarefa corrente
-    task_suspend(task_current, NULL);
+    // Suspender a tarefa corrente até que a operação de leitura seja concluída
+    task_suspend(task_current,NULL);
 
     return 0;
 }
 
+
 int disk_block_write(int block, void *buffer)
 {
-    // Obtém o semáforo de acesso ao disco
-    sem_down(&disk_semaphore);
-
     // Cria uma estrutura para representar a operação de escrita
     disk_t operation;
     operation.type = DISK_CMD_WRITE;
@@ -96,23 +88,21 @@ int disk_block_write(int block, void *buffer)
     operation.buffer = buffer;
     operation.task = task_current;
 
+    // Obtém o semáforo de acesso ao disco
+    sem_down(&disk_semaphore);
+
     // Adiciona a operação à fila de operações do disco
     mqueue_send(&disk_operations_queue, &operation);
-
-    // Se o gerente de disco estiver dormindo, acorda-o
-    if (task_state(&disk_manager_task) == SUSPENDED)
-    {
-        task_resume(&disk_manager_task);
-    }
 
     // Libera o semáforo de acesso ao disco
     sem_up(&disk_semaphore);
 
-    // Suspende a tarefa corrente
-    task_suspend(task_current, NULL);
-
+    // Suspender a tarefa corrente para dar espaço ao gerente de disco
+    task_suspend(task_current,NULL);
+    
     return 0;
 }
+
 
 void diskDriverBody(void *args)
 {
