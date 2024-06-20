@@ -30,7 +30,7 @@ int main (int argc, char *argv[])
     exit (1) ;
   }
   else
-    printf ("%5d ms: disco contem %d blocos de %d bytes cada\n",
+    printf ("%5d ms: disco contem %d  blocos de %d bytes cada\n",
             systime(), numblocks, blocksize) ;
 
   // aloca o buffer para ler blocos do disco

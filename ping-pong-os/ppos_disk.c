@@ -3,19 +3,13 @@
 #include <stdlib.h>
 #include <string.h> // Para usar memcpy
 
-int disk_signal = 0;              // Indica se foi gerado um sinal do disco
-int disk_free = 1;                // Indica se o disco está livre para operações
-task_t *task_current = NULL;      // Tarefa corrente
-semaphore_t disk_semaphore;       // Semáforo para controle de acesso ao disco
-mqueue_t disk_operations_queue;   // Fila de operações do disco
-task_t disk_manager_task; // Declarado como variável global
-
-// gcc -o main ppos_disk.c disk.c ppos.h pingpong-disco1.c ppos-core-aux.c libppos_static.a -lrt      DEVO RODAR
-// gcc -o main pingpong-disco1.c disk.c ppos.h ppos-core-aux.c libppos_static.a -lrt      TESTE 1
-
+int disk_signal = 0;            // Indica se foi gerado um sinal do disco
+task_t *task_current = NULL;    // Tarefa corrente
+semaphore_t disk_semaphore;     // Semáforo para controle de acesso ao disco
+mqueue_t disk_operations_queue; // Fila de operações do disco
+task_t disk_manager_task;       // Declarado como variável global
 
 void diskDriverBody(void *args);
-
 
 int disk_mgr_init(int *numBlocks, int *blockSize)
 {
@@ -56,8 +50,9 @@ int disk_mgr_init(int *numBlocks, int *blockSize)
 
 int disk_block_read(int block, void *buffer)
 {
-    // Cria uma estrutura para representar a operação de leitura
+    // Inicializa a estrutura de operação
     disk_t operation;
+    memset(&operation, 0, sizeof(disk_t));
     operation.type = DISK_CMD_READ;
     operation.block = block;
     operation.buffer = buffer;
@@ -67,17 +62,18 @@ int disk_block_read(int block, void *buffer)
     sem_down(&disk_semaphore);
 
     // Adiciona a operação à fila de operações do disco
-    mqueue_send(&disk_operations_queue, &operation);
+    if (mqueue_send(&disk_operations_queue, &operation) != 0)
+    {
+        printf("disk_block_read: Erro ao enviar operação de leitura para a fila\n");
+        sem_up(&disk_semaphore);
+        return -1;
+    }
 
     // Libera o semáforo de acesso ao disco
     sem_up(&disk_semaphore);
 
-    // Suspender a tarefa corrente até que a operação de leitura seja concluída
-    task_suspend(task_current,NULL);
-
     return 0;
 }
-
 
 int disk_block_write(int block, void *buffer)
 {
@@ -97,12 +93,8 @@ int disk_block_write(int block, void *buffer)
     // Libera o semáforo de acesso ao disco
     sem_up(&disk_semaphore);
 
-    // Suspender a tarefa corrente para dar espaço ao gerente de disco
-    task_suspend(task_current,NULL);
-    
     return 0;
 }
-
 
 void diskDriverBody(void *args)
 {
@@ -114,38 +106,33 @@ void diskDriverBody(void *args)
         // Verifica se foi acordado devido a um sinal do disco
         if (disk_signal)
         {
+
             disk_signal = 0;
-            // Acorda a tarefa cujo pedido foi atendido
+
+            // Processa a operação concluída
             disk_t completed_op;
             mqueue_recv(&disk_operations_queue, &completed_op);
             task_resume(completed_op.task);
+            printf("ENTROU AQUI\n");
         }
 
         // Verifica se o disco está livre e há pedidos na fila
-        if (disk_free && disk_operations_queue.countMessages > 0)
+        if (disk_operations_queue.countMessages > 0)
         {
             // Escolhe na fila o pedido a ser atendido (usando FCFS)
             disk_t next_op;
             mqueue_recv(&disk_operations_queue, &next_op);
 
-            // Solicita ao disco a operação de E/S
-            if (next_op.type == DISK_CMD_READ)
-            {
-                disk_cmd(DISK_CMD_READ, next_op.block, next_op.buffer);
-            }
-            else if (next_op.type == DISK_CMD_WRITE)
-            {
-                disk_cmd(DISK_CMD_WRITE, next_op.block, next_op.buffer);
-            }
+            // Solicita ao disco a operação de L/E
+          
+            disk_cmd(next_op.type, next_op.block, next_op.buffer);
 
-            // Define o disco como ocupado
-            disk_free = 0;
+            disk_signal = 1;
         }
 
         // Libera o semáforo de acesso ao disco
         sem_up(&disk_semaphore);
 
-        // Suspende a tarefa corrente (retorna ao dispatcher)
-        task_suspend(&disk_manager_task, NULL);
+        task_yield();
     }
 }
