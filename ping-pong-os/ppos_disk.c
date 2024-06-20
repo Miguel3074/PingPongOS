@@ -3,11 +3,13 @@
 #include <stdlib.h>
 #include <string.h> // Para usar memcpy
 
-int disk_signal = 0;            // Indica se foi gerado um sinal do disco
-task_t *task_current = NULL;    // Tarefa corrente
-semaphore_t disk_semaphore;     // Semáforo para controle de acesso ao disco
-mqueue_t disk_operations_queue; // Fila de operações do disco
-task_t disk_manager_task;       // Declarado como variável global
+// Variáveis globais do gerenciador de disco
+int num_blocks; // Número de blocos do disco
+int block_size; // Tamanho de cada bloco em bytes
+int disk_signal_received = 0;
+disk_operation_t *disk_operations; // Fila de operações do disco
+semaphore_t disk_semaphore;        // Semáforo para controle de acesso ao disco
+task_t disk_manager_task;          // Tarefa do gerente de disco
 
 void diskDriverBody(void *args);
 
@@ -39,59 +41,80 @@ int disk_mgr_init(int *numBlocks, int *blockSize)
     // Inicializa o semáforo de acesso ao disco
     sem_create(&disk_semaphore, 1);
 
+    // Obtém o semáforo de acesso ao disco
+    // sem_down(&disk_semaphore);
+
     // Inicializa a fila de operações do disco
-    mqueue_create(&disk_operations_queue, sizeof(disk_t), 256);
+    // mqueue_create(&disk_operations_queue, sizeof(disk_t), 256);
 
     // Cria a tarefa do gerente de disco
     task_create(&disk_manager_task, diskDriverBody, NULL);
+    task_resume(&disk_manager_task);
+    disk_manager_task.state = 's';
+
+    signal(SIGUSR1, disk_signal_handler);
+
+    // Libera o semáforo de acesso ao disco
+    sem_up(&disk_semaphore);
 
     return 0; // Sucesso
 }
 
 int disk_block_read(int block, void *buffer)
 {
-    // Inicializa a estrutura de operação
-    disk_t operation;
-    memset(&operation, 0, sizeof(disk_t));
-    operation.type = DISK_CMD_READ;
-    operation.block = block;
-    operation.buffer = buffer;
-    operation.task = task_current;
+    disk_t *operation = (disk_t *)malloc(sizeof(disk_t));
+    if (!operation)
+        return -1; // Erro ao alocar memória para a operação
+
+    operation->type = DISK_CMD_READ;
+    operation->block = block;
+    operation->buffer = buffer;
+    // operation->task = task_current;
 
     // Obtém o semáforo de acesso ao disco
     sem_down(&disk_semaphore);
 
     // Adiciona a operação à fila de operações do disco
-    if (mqueue_send(&disk_operations_queue, &operation) != 0)
+    queue_append((queue_t **)&disk_operations, (queue_t *)operation);
+    if (disk_manager_task.state == 's')
     {
-        printf("disk_block_read: Erro ao enviar operação de leitura para a fila\n");
-        sem_up(&disk_semaphore);
-        return -1;
+        task_resume(&disk_manager_task);
     }
 
     // Libera o semáforo de acesso ao disco
     sem_up(&disk_semaphore);
+
+    task_yield();
 
     return 0;
 }
 
 int disk_block_write(int block, void *buffer)
 {
-    // Cria uma estrutura para representar a operação de escrita
-    disk_t operation;
-    operation.type = DISK_CMD_WRITE;
-    operation.block = block;
-    operation.buffer = buffer;
-    operation.task = task_current;
+    disk_t *operation = (disk_t *)malloc(sizeof(disk_t));
+    if (!operation)
+        return -1; // Erro ao alocar memória para a operação
+
+    operation->type = DISK_CMD_WRITE;
+    operation->block = block;
+    operation->buffer = buffer;
+    // operation->task = task_current;
 
     // Obtém o semáforo de acesso ao disco
     sem_down(&disk_semaphore);
 
     // Adiciona a operação à fila de operações do disco
-    mqueue_send(&disk_operations_queue, &operation);
+    queue_append((queue_t **)&disk_operations, (queue_t *)operation);
+
+    if (disk_manager_task.state == 's')
+    {
+        task_resume(&disk_manager_task);
+    }
 
     // Libera o semáforo de acesso ao disco
     sem_up(&disk_semaphore);
+
+    task_yield();
 
     return 0;
 }
@@ -104,35 +127,39 @@ void diskDriverBody(void *args)
         sem_down(&disk_semaphore);
 
         // Verifica se foi acordado devido a um sinal do disco
-        if (disk_signal)
+        if (disk_signal_received)
         {
 
-            disk_signal = 0;
+            // Verifica se o disco está livre e há pedidos de E/S na fila
+            if (disk_cmd(DISK_CMD_STATUS, 0, 0) == 1 && disk_operations != NULL)
+            {
+                // Escolhe na fila o pedido a ser atendido (usando FCFS)
+                disk_t *next_op = disk_operations;
+                disk_operations = disk_operations->next;
 
-            // Processa a operação concluída
-            disk_t completed_op;
-            mqueue_recv(&disk_operations_queue, &completed_op);
-            task_resume(completed_op.task);
-            printf("ENTROU AQUI\n");
-        }
+                // Solicita ao disco a operação de L/E
+                if (next_op->type == DISK_CMD_WRITE || next_op->type == DISK_CMD_READ)
+                {
+                    disk_cmd(next_op->type, next_op->block, next_op->buffer);
+                }
 
-        // Verifica se o disco está livre e há pedidos na fila
-        if (disk_operations_queue.countMessages > 0)
-        {
-            // Escolhe na fila o pedido a ser atendido (usando FCFS)
-            disk_t next_op;
-            mqueue_recv(&disk_operations_queue, &next_op);
+                // Acorda a tarefa cujo pedido foi atendido
+                task_resume(next_op->task);
 
-            // Solicita ao disco a operação de L/E
-          
-            disk_cmd(next_op.type, next_op.block, next_op.buffer);
-
-            disk_signal = 1;
+                // Libera a memória alocada para a operação
+                free(next_op);
+            }
         }
 
         // Libera o semáforo de acesso ao disco
         sem_up(&disk_semaphore);
 
+        // Suspende a tarefa corrente
         task_yield();
     }
+}
+
+void disk_signal_handler(int signal)
+{
+    disk_signal_received = 1;
 }

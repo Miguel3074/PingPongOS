@@ -253,7 +253,6 @@ int disk_cmd (int cmd, int block, void *buffer)
       // registra que ha uma operacao pendente
       disk.buffer = buffer ;
       disk.next_block = block ;
-      printf("TESTE DISK.c");
       if (cmd == DISK_CMD_READ)
         disk.status = DISK_STATUS_READ ;
       else

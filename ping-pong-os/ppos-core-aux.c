@@ -44,6 +44,7 @@ int task_get_ret(task_t *task)
 
 task_t *scheduler()
 {
+
     task_t *task_return = readyQueue;
     int i;
     task_t *aux;
@@ -51,10 +52,13 @@ task_t *scheduler()
     if (readyQueue != NULL)
     {
         if (countTasks > 1)
+        {
             aux = readyQueue->next;
+        }
         else
+        {
             aux = readyQueue;
-
+        }
         i = 0;
         while (i < countTasks)
         {
@@ -68,11 +72,10 @@ task_t *scheduler()
             aux = aux->next;
             i++;
         }
-        return task_return;
+        return aux;
     }
     return readyQueue;
 }
-
 void GerenciadorTempo(int signum)
 {
     systemTime++;
@@ -103,9 +106,9 @@ void temporizador()
     }
 
     // ajusta valores do temporizador
-    timer.it_value.tv_usec = 1000;
+    timer.it_value.tv_usec = 1000; // 1 milissegundo
     timer.it_value.tv_sec = 0;
-    timer.it_interval.tv_usec = 1000;
+    timer.it_interval.tv_usec = 1000; // 1 milissegundo
     timer.it_interval.tv_sec = 0;
 
     // arma o temporizador ITIMER_REAL (vide man setitimer)

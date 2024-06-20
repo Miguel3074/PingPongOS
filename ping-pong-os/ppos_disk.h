@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include "ppos.h"
 #include "disk.h"
+#include "queue.h"
 
 // interface do gerente de disco rígido (block device driver)
 
@@ -23,6 +24,7 @@ typedef struct
   int block;    // Número do bloco a ser lido ou escrito
   void *buffer; // Buffer de dados para leitura ou escrita
   task_t *task; // Tarefa associada à operação
+  struct disk_t *next;  // Próxima operação na fila
 } disk_t;
 
 // inicializacao do gerente de disco
@@ -36,5 +38,7 @@ int disk_block_read(int block, void *buffer);
 
 // escrita de um bloco, do buffer para o disco
 int disk_block_write(int block, void *buffer);
+
+void disk_signal_handler(int signal);
 
 #endif
