@@ -3,6 +3,7 @@
 // Versão 1.2 -- Julho de 2017
 
 #include <stdio.h>
+#include <signal.h>
 #include "ppos.h"
 #include "disk.h"
 #include "queue.h"
@@ -17,15 +18,14 @@
 // tipicamente um disco rigido.
 
 // estrutura que representa um disco no sistema operacional
-typedef struct
-{
-  // completar com os campos necessarios
-  int type;     // Tipo da operação (leitura ou escrita)
-  int block;    // Número do bloco a ser lido ou escrito
-  void *buffer; // Buffer de dados para leitura ou escrita
-  task_t *task; // Tarefa associada à operação
-  struct disk_t *next;  // Próxima operação na fila
-} disk_t;
+typedef struct disk_t disk_t;
+
+// Definição da estrutura disk_t
+struct disk_t {
+  int type;       // Tipo da operação (leitura ou escrita)
+  int block;      // Número do bloco a ser lido ou escrito
+  void *buffer;   // Buffer de dados para leitura ou escrita
+};
 
 // inicializacao do gerente de disco
 // retorna -1 em erro ou 0 em sucesso
