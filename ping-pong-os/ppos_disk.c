@@ -1,5 +1,5 @@
-#include "ppos_disk.h"                //   gcc -o main ppos_disk.c disk.c ppos.h pingpong-disco1.c ppos-core-aux.c libppos_static.a -lrt   COMANDO
-#include <stdio.h>                    //   gcc -o main disk.c ppos.h pingpong-disco1.c ppos-core-aux.c libppos_static.a -lrt
+#include "ppos_disk.h" //   gcc -o main ppos_disk.c disk.c ppos.h pingpong-disco1.c ppos-core-aux.c libppos_static.a -lrt   COMANDO
+#include <stdio.h>     //   gcc -o main disk.c ppos.h pingpong-disco1.c ppos-core-aux.c libppos_static.a -lrt
 #include <stdlib.h>
 #include <signal.h>
 
@@ -74,11 +74,11 @@ int disk_block_read(int block, void *buffer)
     sem_down(&disk_semaphore);
 
     // Adiciona a operação à fila de operações do disco
+    
     queue_append((queue_t **)&task_queue, (queue_t *)operation);
-
     // Se o gerente de disco está dormindo, acorda-o
     task_resume(disk_manager_task);
-    
+
     // Libera o semáforo de acesso ao disco
     task_yield();
 
@@ -117,7 +117,7 @@ void diskDriverBody(void *args)
         // Obtém o semáforo de acesso ao disco
         sem_down(&disk_semaphore);
         // Verifica se foi acordado devido a um sinal do disco
-        if (disk_signal_received || task_queue != NULL)
+        if (disk_signal_received || queue_size((queue_t *)task_queue) > 0)
         {
             disk_signal_received = 0;
             if (task_queue)
@@ -149,7 +149,7 @@ void diskDriverBody(void *args)
         task_yield();
     }
 
-    free(disk_manager_task);    // Tarefa do gerente de disco
+    free(disk_manager_task); // Tarefa do gerente de disco
     free(task_queue);
 }
 
