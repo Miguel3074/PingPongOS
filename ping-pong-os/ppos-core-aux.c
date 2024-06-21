@@ -72,7 +72,7 @@ task_t *scheduler()
             aux = aux->next;
             i++;
         }
-        return aux;
+        return task_return;
     }
     return readyQueue;
 }
