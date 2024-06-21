@@ -1,5 +1,5 @@
-#include "ppos_disk.h"
-#include <stdio.h>
+#include "ppos_disk.h"                //   gcc -o main ppos_disk.c disk.c ppos.h pingpong-disco1.c ppos-core-aux.c libppos_static.a -lrt   COMANDO
+#include <stdio.h>                    //   gcc -o main disk.c ppos.h pingpong-disco1.c ppos-core-aux.c libppos_static.a -lrt
 #include <stdlib.h>
 #include <signal.h>
 
@@ -52,7 +52,7 @@ int disk_mgr_init(int *numBlocks, int *blockSize)
     sem_create(&disk_semaphore, 1);
 
     // Cria a tarefa do gerente de disco
-    task_create(disk_manager_task, diskDriverBody, NULL); // TALVEZ PROBLEMA AQUI E PRECISE CRIAR UMA TASK PARA ISSO
+    task_create(disk_manager_task, diskDriverBody, NULL);
 
     // Configura o manipulador de sinal para SIGUSR1
     signal(SIGUSR1, disk_signal_handler);
@@ -78,9 +78,9 @@ int disk_block_read(int block, void *buffer)
 
     // Se o gerente de disco está dormindo, acorda-o
     task_resume(disk_manager_task);
+    
     // Libera o semáforo de acesso ao disco
-    // sem_up(&disk_semaphore);
-    // task_yield();
+    task_yield();
 
     return 0;
 }
@@ -105,8 +105,6 @@ int disk_block_write(int block, void *buffer)
     task_resume(disk_manager_task);
 
     // Libera o semáforo de acesso ao disco
-    sem_up(&disk_semaphore);
-
     task_yield();
 
     return 0;
@@ -118,14 +116,13 @@ void diskDriverBody(void *args)
     {
         // Obtém o semáforo de acesso ao disco
         sem_down(&disk_semaphore);
-
         // Verifica se foi acordado devido a um sinal do disco
         if (disk_signal_received || task_queue != NULL)
         {
             disk_signal_received = 0;
             if (task_queue)
             {
-                task_t *operation = task_queue->next;
+                task_t *operation = task_queue;
 
                 // Solicita ao disco a operação de L/E
                 if (operation->disk.type == DISK_CMD_WRITE || operation->disk.type == DISK_CMD_READ)
@@ -140,7 +137,8 @@ void diskDriverBody(void *args)
                 // Remove a operação da fila e libera a memória alocada para a operação
                 queue_remove((queue_t **)&task_queue, (queue_t *)operation);
                 free(operation);
-                task_sleep(10);
+
+                task_sleep(1);
             }
         }
 
@@ -150,6 +148,9 @@ void diskDriverBody(void *args)
         // Suspende a tarefa corrente
         task_yield();
     }
+
+    free(disk_manager_task);    // Tarefa do gerente de disco
+    free(task_queue);
 }
 
 void disk_signal_handler(int signal)
