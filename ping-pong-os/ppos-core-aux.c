@@ -8,7 +8,7 @@
 #include <signal.h>
 
 #define QUANTUM 20
-// #define DEBUG 1
+//#define DEBUG 1
 
 struct sigaction action;
 struct itimerval timer;

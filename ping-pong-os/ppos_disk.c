@@ -11,7 +11,9 @@ semaphore_t disk_semaphore;   // Semáforo para controle de acesso ao disco
 task_t *disk_manager_task;    // Tarefa do gerente de disco
 task_t *task_queue = NULL;
 task_t *disk_wait_queue = NULL; // Fila de tarefas esperando pelo disco
-;                               // Tarefa de fila
+int current_head_position = 0;  // Posição atual do cabeçote do disco
+int blocks_traversed = 0;       // Número de blocos traversados
+
 
 enum SchedulingAlgorithm
 {
@@ -92,6 +94,7 @@ int disk_block_read(int block, void *buffer)
     // Adiciona a operação à fila de operações do disco
 
     queue_append((queue_t **)&task_queue, (queue_t *)operation);
+
     // Se o gerente de disco está dormindo, acorda-o
     task_resume(disk_manager_task);
 
@@ -128,56 +131,68 @@ int disk_block_write(int block, void *buffer)
 
 void diskDriverBody(void *args)
 {
-    int current_head_position = 0;
-    int blocks_traversed = 0;
     while (1)
     {
-        // Obtém o semáforo de acesso ao disco
         sem_down(&disk_semaphore);
-        // Verifica se foi acordado devido a um sinal do disco
-        if (disk_signal_received || queue_size((queue_t *)task_queue) > 0)
+
+        // Se foi acordado devido a um sinal do disco
+        if (disk_signal_received)
         {
+            // Resetar o sinal do disco
             disk_signal_received = 0;
+
+            // Acorda a tarefa cujo pedido foi atendido
             if (task_queue)
             {
-                // switch (current_algorithm) {
-                //     case FCFS:
-                //         schedule_fcfs(&task_queue, current_head_position, &blocks_traversed);
-                //         break;
-                //     case SSTF:
-                //         schedule_sstf(&task_queue, current_head_position, &blocks_traversed);
-                //         break;
-                //     case CSCAN:
-                //         schedule_cscan(&task_queue, current_head_position, &blocks_traversed, num_blocks);
-                //         break;
-                // }
                 task_t *operation = task_queue;
-
-                // Solicita ao disco a operação de L/E
-                if (operation->disk.type == DISK_CMD_WRITE || operation->disk.type == DISK_CMD_READ)
-                {
-                    disk_cmd(operation->disk.type, operation->disk.block, operation->disk.buffer);
-                }
-
-                // Acorda a tarefa cujo pedido foi atendido
                 task_resume(operation);
 
                 // Remove a operação da fila e libera a memória alocada para a operação
                 queue_remove((queue_t **)&task_queue, (queue_t *)operation);
                 free(operation);
+            }
+        }
+        printf("%d\n",current_head_position);
+        switch (current_algorithm)
+        {
+        case FCFS:
+            schedule_fcfs(&task_queue, current_head_position, &blocks_traversed);
+            break;
+        case SSTF:
+            schedule_sstf(&task_queue, current_head_position, &blocks_traversed);
+            break;
+        case CSCAN:
+            schedule_cscan(&task_queue, current_head_position, &blocks_traversed, num_blocks);
+            break;
+        default:
+            // Algoritmo de escalonamento inválido
+            break;
+        }
 
-                task_sleep(1);
+        // Consulta o status do disco
+        int disk_status = disk_cmd(DISK_CMD_STATUS, 0, 0);
+
+        // Se o disco estiver livre e houver pedidos de E/S na fila
+        if (disk_status == DISK_STATUS_IDLE && task_queue != NULL)
+        {
+            // Escolhe na fila o pedido a ser atendido, usando FCFS
+            task_t *operation = task_queue;
+
+            // Solicita ao disco a operação de E/S, usando disk_cmd()
+            if (operation->disk.type == DISK_CMD_WRITE || operation->disk.type == DISK_CMD_READ)
+            {
+                disk_cmd(operation->disk.type, operation->disk.block, operation->disk.buffer);
             }
         }
 
-        // Libera o semáforo de acesso ao disco
+        task_sleep(10);
         sem_up(&disk_semaphore);
-
-        // Suspende a tarefa corrente
+        // Suspende a tarefa corrente (retorna ao dispatcher)
         task_suspend(disk_manager_task, &disk_wait_queue);
     }
 
-    free(disk_manager_task); // Tarefa do gerente de disco
+    // Liberação de recursos (não deveria ser alcançada devido ao loop infinito)
+    free(disk_manager_task);
     free(task_queue);
 }
 
@@ -192,7 +207,7 @@ void schedule_fcfs(task_t **task_queue, int current_head_position, int *blocks_t
     // Não é necessário reordenar a fila de operações, pois já está na ordem de chegada
     task_t *task = *task_queue;
 
-    while (task)
+    while (task)  //LOOP INFINITO RESOLVER
     {
         int distance = abs(task->disk.block - current_head_position);
         *blocks_traversed += distance;
@@ -204,7 +219,7 @@ void schedule_fcfs(task_t **task_queue, int current_head_position, int *blocks_t
 void schedule_sstf(task_t **task_queue, int current_head_position, int *blocks_traversed)
 {
     task_t *sorted_queue = NULL;
-    while (*task_queue)
+    while (*task_queue) //LOOP INFINITO RESOLVER
     {
         task_t *closest_task = NULL;
         task_t *prev_task = NULL;
@@ -235,7 +250,7 @@ void schedule_sstf(task_t **task_queue, int current_head_position, int *blocks_t
         {
             *task_queue = closest_task->next;
         }
-        // Append closest_task to sorted_queue
+        // Adiciona closest_task para sorted_queue
         closest_task->next = NULL;
         queue_append((queue_t **)&sorted_queue, (queue_t *)closest_task);
     }
@@ -247,7 +262,7 @@ void schedule_cscan(task_t **task_queue, int current_head_position, int *blocks_
     task_t *sorted_queue = NULL;
 
     // Ordena a fila de operações pela posição dos blocos
-    while (*task_queue)
+    while (*task_queue) //LOOP INFINITO RESOLVER
     {
         task_t *min_task = NULL;
         task_t *prev_task = NULL;
@@ -275,7 +290,7 @@ void schedule_cscan(task_t **task_queue, int current_head_position, int *blocks_
             *task_queue = min_task->next;
         }
 
-        // Append min_task ao sorted_queue
+        // Adiciona min_task ao sorted_queue
         min_task->next = NULL;
         queue_append((queue_t **)&sorted_queue, (queue_t *)min_task);
     }
