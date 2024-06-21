@@ -8,6 +8,7 @@
 #include <signal.h>
 
 #define QUANTUM 20
+// #define DEBUG 1
 
 struct sigaction action;
 struct itimerval timer;
@@ -45,9 +46,10 @@ int task_get_ret(task_t *task)
 task_t *scheduler()
 {
 
-    task_t *task_return = readyQueue;
+    task_t *task_return = (task_t *)malloc(sizeof(task_t));
+    task_return = readyQueue;
     int i;
-    task_t *aux;
+    task_t *aux = (task_t *)malloc(sizeof(task_t));
 
     if (readyQueue != NULL)
     {
@@ -74,6 +76,8 @@ task_t *scheduler()
         }
         return task_return;
     }
+    free(aux);
+    free(task_return);
     return readyQueue;
 }
 void GerenciadorTempo(int signum)
