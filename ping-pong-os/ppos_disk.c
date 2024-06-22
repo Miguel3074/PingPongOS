@@ -14,7 +14,6 @@ task_t *disk_wait_queue = NULL; // Fila de tarefas esperando pelo disco
 int current_head_position = 0;  // Posição atual do cabeçote do disco
 int blocks_traversed = 0;       // Número de blocos traversados
 
-
 enum SchedulingAlgorithm
 {
     FCFS,
@@ -22,17 +21,17 @@ enum SchedulingAlgorithm
     CSCAN
 };
 
-enum SchedulingAlgorithm current_algorithm = FCFS; // Algoritmo de escalonamento escolhido
+enum SchedulingAlgorithm current_algorithm = SSTF; // Algoritmo de escalonamento escolhido
 
 // Prototipo das funções
 void diskDriverBody(void *args);
 void disk_signal_handler(int signal);
 
-void schedule_fcfs(task_t **task_queue, int current_head_position, int *blocks_traversed);
+void schedule_fcfs(task_t **task_queue, int *current_head_position, int *blocks_traversed);
 
-void schedule_sstf(task_t **task_queue, int current_head_position, int *blocks_traversed);
+void schedule_sstf(task_t **task_queue, int *current_head_position, int *blocks_traversed);
 
-void schedule_cscan(task_t **task_queue, int current_head_position, int *blocks_traversed, int num_blocks);
+void schedule_cscan(task_t **task_queue, int *current_head_position, int *blocks_traversed, int num_blocks);
 
 int disk_mgr_init(int *numBlocks, int *blockSize)
 {
@@ -152,18 +151,17 @@ void diskDriverBody(void *args)
                 free(operation);
             }
         }
-        printf("%d\n",current_head_position);
         switch (current_algorithm)
         {
         case FCFS:
-            schedule_fcfs(&task_queue, current_head_position, &blocks_traversed);
+            schedule_fcfs(&task_queue, &current_head_position, &blocks_traversed);
             break;
         case SSTF:
-            schedule_sstf(&task_queue, current_head_position, &blocks_traversed);
+            schedule_sstf(&task_queue, &current_head_position, &blocks_traversed);
             break;
-        case CSCAN:
-            schedule_cscan(&task_queue, current_head_position, &blocks_traversed, num_blocks);
-            break;
+        // case CSCAN:
+        //     schedule_cscan(&task_queue, &current_head_position, &blocks_traversed, num_blocks);
+        //     break;
         default:
             // Algoritmo de escalonamento inválido
             break;
@@ -202,119 +200,119 @@ void disk_signal_handler(int signal)
     task_resume(disk_manager_task); // Acorda a tarefa gerente de disco
 }
 
-void schedule_fcfs(task_t **task_queue, int current_head_position, int *blocks_traversed)
+void schedule_fcfs(task_t **task_queue, int *current_head_position, int *blocks_traversed)
 {
-    // Não é necessário reordenar a fila de operações, pois já está na ordem de chegada
-    task_t *task = *task_queue;
-
-    while (task)  //LOOP INFINITO RESOLVER
+    // Verifica se há tarefas na fila
+    if (*task_queue == NULL)
     {
-        int distance = abs(task->disk.block - current_head_position);
-        *blocks_traversed += distance;
-        current_head_position = task->disk.block;
-
-        task = task->next;
+        return;
     }
-}
-void schedule_sstf(task_t **task_queue, int current_head_position, int *blocks_traversed)
-{
-    task_t *sorted_queue = NULL;
-    while (*task_queue) //LOOP INFINITO RESOLVER
-    {
-        task_t *closest_task = NULL;
-        task_t *prev_task = NULL;
-        task_t *task = *task_queue;
-        task_t *prev = NULL;
 
-        while (task)
-        {
-            if (!closest_task || abs(task->disk.block - current_head_position) < abs(closest_task->disk.block - current_head_position))
-            {
-                closest_task = task;
-                prev_task = prev;
-            }
-            prev = task;
-            task = task->next;
-        }
+    // A primeira tarefa na fila é a próxima a ser atendida
+    task_t *operation = *task_queue;
 
-        int distance = abs(closest_task->disk.block - current_head_position);
-        *blocks_traversed += distance;
-        current_head_position = closest_task->disk.block;
+    // Calcula o número de blocos a serem percorridos para atender a operação
+    *blocks_traversed += abs(operation->disk.block - *current_head_position);
 
-        // Remove closest_task from task_queue
-        if (prev_task)
-        {
-            prev_task->next = closest_task->next;
-        }
-        else
-        {
-            *task_queue = closest_task->next;
-        }
-        // Adiciona closest_task para sorted_queue
-        closest_task->next = NULL;
-        queue_append((queue_t **)&sorted_queue, (queue_t *)closest_task);
-    }
-    *task_queue = sorted_queue;
+    // Atualiza a posição atual do cabeçote
+    *current_head_position = operation->disk.block;
 }
 
-void schedule_cscan(task_t **task_queue, int current_head_position, int *blocks_traversed, int num_blocks)
+void schedule_sstf(task_t **task_queue, int *current_head_position, int *blocks_traversed)
 {
-    task_t *sorted_queue = NULL;
-
-    // Ordena a fila de operações pela posição dos blocos
-    while (*task_queue) //LOOP INFINITO RESOLVER
+    // Verifica se há tarefas na fila
+    if (*task_queue == NULL)
     {
-        task_t *min_task = NULL;
-        task_t *prev_task = NULL;
-        task_t *task = *task_queue;
-        task_t *prev = NULL;
-
-        while (task)
-        {
-            if (!min_task || task->disk.block < min_task->disk.block)
-            {
-                min_task = task;
-                prev_task = prev;
-            }
-            prev = task;
-            task = task->next;
-        }
-
-        // Remove min_task da task_queue
-        if (prev_task)
-        {
-            prev_task->next = min_task->next;
-        }
-        else
-        {
-            *task_queue = min_task->next;
-        }
-
-        // Adiciona min_task ao sorted_queue
-        min_task->next = NULL;
-        queue_append((queue_t **)&sorted_queue, (queue_t *)min_task);
+        return;
     }
 
-    task_t *task = sorted_queue;
-    int wrapped_around = 0;
+    task_t *closest_task = NULL;
+    int closest_distance = num_blocks; // Inicializa com a maior distância possível
 
-    while (task)
+    task_t *first = *task_queue;
+    task_t *task = first;
+
+    do
     {
-        if (task->disk.block >= current_head_position || wrapped_around)
+        int distance = abs(task->disk.block - *current_head_position);
+        if (distance < closest_distance)
         {
-            int distance = abs(task->disk.block - current_head_position);
-            *blocks_traversed += distance;
-            current_head_position = task->disk.block;
+            closest_distance = distance;
+            closest_task = task;
         }
         task = task->next;
+    } while (task != first);
 
-        // Verifica se precisamos fazer a volta circular
-        if (!task && !wrapped_around)
-        {
-            *blocks_traversed += (num_blocks - current_head_position);
-            current_head_position = 0;
-            task = sorted_queue;
-            wrapped_around = 1;
-        }
+    if (closest_task)
+    {
+        // Atualiza a posição do cabeçote e os blocos percorridos
+        *blocks_traversed += closest_distance;
+        *current_head_position = closest_task->disk.block;
+
+        // Remove a tarefa mais próxima da fila e coloca-a no início
+        queue_remove((queue_t **)task_queue, (queue_t *)closest_task);
+        queue_append((queue_t **)task_queue, (queue_t *)closest_task);
     }
 }
+
+// void schedule_cscan(task_t **task_queue, int *current_head_position, int *blocks_traversed, int num_blocks)
+// {
+//     task_t *sorted_queue = NULL;
+
+//     // Ordena a fila de operações pela posição dos blocos
+//     while (*task_queue) //LOOP INFINITO RESOLVER
+//     {
+//         task_t *min_task = NULL;
+//         task_t *prev_task = NULL;
+//         task_t *task = *task_queue;
+//         task_t *prev = NULL;
+
+//         while (task)
+//         {
+//             if (!min_task || task->disk.block < min_task->disk.block)
+//             {
+//                 min_task = task;
+//                 prev_task = prev;
+//             }
+//             prev = task;
+//             task = task->next;
+//         }
+
+//         // Remove min_task da task_queue
+//         if (prev_task)
+//         {
+//             prev_task->next = min_task->next;
+//         }
+//         else
+//         {
+//             *task_queue = min_task->next;
+//         }
+
+//         // Adiciona min_task ao sorted_queue
+//         min_task->next = NULL;
+//         queue_append((queue_t **)&sorted_queue, (queue_t *)min_task);
+//     }
+
+//     task_t *task = sorted_queue;
+//     int wrapped_around = 0;
+
+//     while (task)
+//     {
+//         if (task->disk.block >= current_head_position || wrapped_around)
+//         {
+//             int distance = abs(task->disk.block - current_head_position);
+//             *blocks_traversed += distance;
+//             current_head_position = task->disk.block;
+//         }
+//         task = task->next;
+
+//         // Verifica se precisamos fazer a volta circular
+//         if (!task && !wrapped_around)
+//         {
+//             *blocks_traversed += (num_blocks - current_head_position);
+//             current_head_position = 0;
+//             task = sorted_queue;
+//             wrapped_around = 1;
+//         }
+//     }
+// }
