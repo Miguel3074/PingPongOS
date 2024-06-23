@@ -21,7 +21,7 @@ enum SchedulingAlgorithm
     CSCAN
 };
 
-enum SchedulingAlgorithm current_algorithm = SSTF; // Algoritmo de escalonamento escolhido
+enum SchedulingAlgorithm current_algorithm = CSCAN; // Algoritmo de escalonamento escolhido
 
 // Prototipo das funções
 void diskDriverBody(void *args);
@@ -80,6 +80,7 @@ int disk_mgr_init(int *numBlocks, int *blockSize)
 int disk_block_read(int block, void *buffer)
 {
     task_t *operation = (task_t *)malloc(sizeof(task_t));
+    operation->next = NULL;
     if (!operation)
         return -1; // Erro ao alocar memória para a operação
 
@@ -106,6 +107,7 @@ int disk_block_read(int block, void *buffer)
 int disk_block_write(int block, void *buffer)
 {
     task_t *operation = (task_t *)malloc(sizeof(task_t));
+    operation->next = NULL;
     if (!operation)
         return -1; // Erro ao alocar memória para a operação
 
@@ -151,6 +153,7 @@ void diskDriverBody(void *args)
                 free(operation);
             }
         }
+
         switch (current_algorithm)
         {
         case FCFS:
@@ -159,9 +162,9 @@ void diskDriverBody(void *args)
         case SSTF:
             schedule_sstf(&task_queue, &current_head_position, &blocks_traversed);
             break;
-        // case CSCAN:
-        //     schedule_cscan(&task_queue, &current_head_position, &blocks_traversed, num_blocks);
-        //     break;
+        case CSCAN:
+            schedule_cscan(&task_queue, &current_head_position, &blocks_traversed, num_blocks);
+            break;
         default:
             // Algoritmo de escalonamento inválido
             break;
@@ -180,6 +183,9 @@ void diskDriverBody(void *args)
             if (operation->disk.type == DISK_CMD_WRITE || operation->disk.type == DISK_CMD_READ)
             {
                 disk_cmd(operation->disk.type, operation->disk.block, operation->disk.buffer);
+
+                // Atualiza a posição do cabeçote após a operação
+                current_head_position = operation->disk.block;
             }
         }
 
@@ -217,7 +223,6 @@ void schedule_fcfs(task_t **task_queue, int *current_head_position, int *blocks_
     // Atualiza a posição atual do cabeçote
     *current_head_position = operation->disk.block;
 }
-
 void schedule_sstf(task_t **task_queue, int *current_head_position, int *blocks_traversed)
 {
     // Verifica se há tarefas na fila
@@ -229,8 +234,8 @@ void schedule_sstf(task_t **task_queue, int *current_head_position, int *blocks_
     task_t *closest_task = NULL;
     int closest_distance = num_blocks; // Inicializa com a maior distância possível
 
-    task_t *first = *task_queue;
-    task_t *task = first;
+    task_t *operation = *task_queue;
+    task_t *task = operation;
 
     do
     {
@@ -241,7 +246,7 @@ void schedule_sstf(task_t **task_queue, int *current_head_position, int *blocks_
             closest_task = task;
         }
         task = task->next;
-    } while (task != first);
+    } while (task != operation);
 
     if (closest_task)
     {
@@ -249,70 +254,73 @@ void schedule_sstf(task_t **task_queue, int *current_head_position, int *blocks_
         *blocks_traversed += closest_distance;
         *current_head_position = closest_task->disk.block;
 
-        // Remove a tarefa mais próxima da fila e coloca-a no início
-        queue_remove((queue_t **)task_queue, (queue_t *)closest_task);
-        queue_append((queue_t **)task_queue, (queue_t *)closest_task);
+        // Remove a tarefa mais próxima da fila
+        queue_remove((queue_t **)&task_queue, (queue_t *)closest_task);
+        free(closest_task); // Libera a memória alocada para a tarefa
     }
+
+    // Calcula o número de blocos a serem percorridos para atender a operação
+    *blocks_traversed += abs(operation->disk.block - *current_head_position);
 }
 
-// void schedule_cscan(task_t **task_queue, int *current_head_position, int *blocks_traversed, int num_blocks)
-// {
-//     task_t *sorted_queue = NULL;
+void schedule_cscan(task_t **task_queue, int *current_head_position, int *blocks_traversed, int num_blocks)
+{
+    if (*task_queue == NULL)
+    {
+        return;
+    }
 
-//     // Ordena a fila de operações pela posição dos blocos
-//     while (*task_queue) //LOOP INFINITO RESOLVER
-//     {
-//         task_t *min_task = NULL;
-//         task_t *prev_task = NULL;
-//         task_t *task = *task_queue;
-//         task_t *prev = NULL;
+    // Ordena a fila de tarefas com base na posição do bloco
+    task_t *current = *task_queue;
+    while (current->next != NULL)
+    {
+        task_t *next = current->next;
+        while (next != NULL)
+        {
+            if (current->disk.block > next->disk.block)
+            {
+                int temp_block = current->disk.block;
+                current->disk.block = next->disk.block;
+                next->disk.block = temp_block;
+            }
+            next = next->next;
+        }
+        current = current->next;
+    }
 
-//         while (task)
-//         {
-//             if (!min_task || task->disk.block < min_task->disk.block)
-//             {
-//                 min_task = task;
-//                 prev_task = prev;
-//             }
-//             prev = task;
-//             task = task->next;
-//         }
+    // Encontra a primeira tarefa na fila cujo bloco é maior que a posição atual do cabeçote
+    current = *task_queue;
+    while (current != NULL && current->disk.block <= *current_head_position)
+    {
+        current = current->next;
+    }
 
-//         // Remove min_task da task_queue
-//         if (prev_task)
-//         {
-//             prev_task->next = min_task->next;
-//         }
-//         else
-//         {
-//             *task_queue = min_task->next;
-//         }
+    // Se não há tarefas na direção atual, move o cabeçote para o início do disco
+    if (current == NULL)
+    {
+        *blocks_traversed += num_blocks - *current_head_position;
+        *current_head_position = 0;
+    }
+    else
+    {
+        // Calcula o número de blocos a serem percorridos até a última tarefa na direção atual
+        *blocks_traversed += current->disk.block - *current_head_position;
+        *current_head_position = current->disk.block;
+    }
 
-//         // Adiciona min_task ao sorted_queue
-//         min_task->next = NULL;
-//         queue_append((queue_t **)&sorted_queue, (queue_t *)min_task);
-//     }
+    // Atualiza a posição do cabeçote e os blocos percorridos para atender às tarefas na direção oposta
+    while (current != NULL)
+    {
+        *blocks_traversed += abs(current->disk.block - *current_head_position);
+        *current_head_position = current->disk.block;
+        current = current->next;
+    }
 
-//     task_t *task = sorted_queue;
-//     int wrapped_around = 0;
-
-//     while (task)
-//     {
-//         if (task->disk.block >= current_head_position || wrapped_around)
-//         {
-//             int distance = abs(task->disk.block - current_head_position);
-//             *blocks_traversed += distance;
-//             current_head_position = task->disk.block;
-//         }
-//         task = task->next;
-
-//         // Verifica se precisamos fazer a volta circular
-//         if (!task && !wrapped_around)
-//         {
-//             *blocks_traversed += (num_blocks - current_head_position);
-//             current_head_position = 0;
-//             task = sorted_queue;
-//             wrapped_around = 1;
-//         }
-//     }
-// }
+    // Remove as tarefas atendidas da fila
+    while (*task_queue != NULL && (*task_queue)->disk.block <= *current_head_position)
+    {
+        task_t *temp = *task_queue;
+        *task_queue = (*task_queue)->next;
+        free(temp);
+    }
+}
