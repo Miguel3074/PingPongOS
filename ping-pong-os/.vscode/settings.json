@@ -4,6 +4,7 @@
         "stdio.h": "c",
         "ppos.h": "c",
         "stdlib.h": "c",
-        "type_traits": "c"
+        "type_traits": "c",
+        "ppos_disk.h": "c"
     }
 }

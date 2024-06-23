@@ -2,6 +2,7 @@
 #include <stdio.h>     //   gcc -o main disk.c ppos.h pingpong-disco1.c ppos-core-aux.c libppos_static.a -lrt
 #include <stdlib.h>
 #include <signal.h>
+#include "ppos-core-globals.h"
 
 // Variáveis globais do gerenciador de disco
 int num_blocks;               // Número de blocos do disco
@@ -21,7 +22,7 @@ enum SchedulingAlgorithm
     CSCAN
 };
 
-enum SchedulingAlgorithm current_algorithm = CSCAN; // Algoritmo de escalonamento escolhido
+enum SchedulingAlgorithm current_algorithm = FCFS; // Algoritmo de escalonamento escolhido
 
 // Prototipo das funções
 void diskDriverBody(void *args);
@@ -32,6 +33,10 @@ void schedule_fcfs(task_t **task_queue, int *current_head_position, int *blocks_
 void schedule_sstf(task_t **task_queue, int *current_head_position, int *blocks_traversed);
 
 void schedule_cscan(task_t **task_queue, int *current_head_position, int *blocks_traversed, int num_blocks);
+
+void swap_tasks(task_t *task1, task_t *task2);
+
+void sort_task_queue(task_t **task_queue);
 
 int disk_mgr_init(int *numBlocks, int *blockSize)
 {
@@ -69,7 +74,10 @@ int disk_mgr_init(int *numBlocks, int *blockSize)
     sem_create(&disk_semaphore, 1);
 
     // Cria a tarefa do gerente de disco
-    task_create(disk_manager_task, diskDriverBody, NULL);
+    task_create(disk_manager_task, diskDriverBody, NULL);       //ERRO 1 :::: ESTA ADICIONANDO disk_manager_task NA FILA, CAUSANDO TODA FILA IR UM LUGAR
+                                                                //            PARA O LADO E CAUSANDO O SEGMANTATION FAULT NO FINAL
+
+                                                                // NÃO CONSEGUI RESOLVER DEPOIS DE +10 HORAS TENTANDO
 
     // Configura o manipulador de sinal para SIGUSR1
     signal(SIGUSR1, disk_signal_handler);
@@ -98,7 +106,6 @@ int disk_block_read(int block, void *buffer)
     // Se o gerente de disco está dormindo, acorda-o
     task_resume(disk_manager_task);
 
-    // Libera o semáforo de acesso ao disco
     task_yield();
 
     return 0;
@@ -124,7 +131,6 @@ int disk_block_write(int block, void *buffer)
     // Se o gerente de disco está dormindo, acorda-o
     task_resume(disk_manager_task);
 
-    // Libera o semáforo de acesso ao disco
     task_yield();
 
     return 0;
@@ -134,9 +140,9 @@ void diskDriverBody(void *args)
 {
     while (1)
     {
+        // Se foi acordado devido a um sinal do disco
         sem_down(&disk_semaphore);
 
-        // Se foi acordado devido a um sinal do disco
         if (disk_signal_received)
         {
             // Resetar o sinal do disco
@@ -169,7 +175,6 @@ void diskDriverBody(void *args)
             // Algoritmo de escalonamento inválido
             break;
         }
-
         // Consulta o status do disco
         int disk_status = disk_cmd(DISK_CMD_STATUS, 0, 0);
 
@@ -188,16 +193,13 @@ void diskDriverBody(void *args)
                 current_head_position = operation->disk.block;
             }
         }
+        task_sleep(1);
 
-        task_sleep(10);
         sem_up(&disk_semaphore);
+
         // Suspende a tarefa corrente (retorna ao dispatcher)
         task_suspend(disk_manager_task, &disk_wait_queue);
     }
-
-    // Liberação de recursos (não deveria ser alcançada devido ao loop infinito)
-    free(disk_manager_task);
-    free(task_queue);
 }
 
 void disk_signal_handler(int signal)
@@ -264,63 +266,87 @@ void schedule_sstf(task_t **task_queue, int *current_head_position, int *blocks_
 }
 
 void schedule_cscan(task_t **task_queue, int *current_head_position, int *blocks_traversed, int num_blocks)
+
+//ERRO 2 :::: NA PRIMEIRA VEZ Q VAI RODAR CAI EM UM LOOP INFINITO POR CAUSA QUE A PRIMEIRA POSICAO NÃO É UM TASK DE COMANDO, MAS SIM O disk_manager_task
+//            ACREDITO QUE SE FOSSE POSSIVEL CORRIGIR O OUTRO ERRO ESSE TAMBEM SERIA
+
+
 {
+    // Verifica se há tarefas na fila
     if (*task_queue == NULL)
     {
         return;
     }
 
-    // Ordena a fila de tarefas com base na posição do bloco
-    task_t *current = *task_queue;
-    while (current->next != NULL)
+    // Ordena a fila de tarefas de acordo com a posição dos blocos
+    sort_task_queue(task_queue);
+
+    task_t *operation = *task_queue;
+
+    // Encontra a primeira tarefa na fila que está além da posição atual do cabeçote
+    while (operation != NULL && operation->disk.block <= *current_head_position)
     {
-        task_t *next = current->next;
-        while (next != NULL)
-        {
-            if (current->disk.block > next->disk.block)
-            {
-                int temp_block = current->disk.block;
-                current->disk.block = next->disk.block;
-                next->disk.block = temp_block;
-            }
-            next = next->next;
-        }
-        current = current->next;
+        operation = operation->next;
     }
 
-    // Encontra a primeira tarefa na fila cujo bloco é maior que a posição atual do cabeçote
-    current = *task_queue;
-    while (current != NULL && current->disk.block <= *current_head_position)
+    if (operation == NULL)
     {
-        current = current->next;
-    }
-
-    // Se não há tarefas na direção atual, move o cabeçote para o início do disco
-    if (current == NULL)
-    {
+        // Se não há tarefas à frente, mova o cabeçote para o bloco 0
         *blocks_traversed += num_blocks - *current_head_position;
         *current_head_position = 0;
     }
     else
     {
-        // Calcula o número de blocos a serem percorridos até a última tarefa na direção atual
-        *blocks_traversed += current->disk.block - *current_head_position;
-        *current_head_position = current->disk.block;
+        // Caso contrário, mova o cabeçote para a primeira tarefa à frente
+        *blocks_traversed += operation->disk.block - *current_head_position;
+        *current_head_position = operation->disk.block;
     }
 
-    // Atualiza a posição do cabeçote e os blocos percorridos para atender às tarefas na direção oposta
-    while (current != NULL)
+    // Remove a operação atendida da fila
+    if (operation != NULL)
     {
-        *blocks_traversed += abs(current->disk.block - *current_head_position);
-        *current_head_position = current->disk.block;
-        current = current->next;
+        queue_remove((queue_t **)task_queue, (queue_t *)operation);
+        free(operation);
+    }
+}
+
+void sort_task_queue(task_t **task_queue)
+{
+    task_t *current, *next_task;
+    task_t temp;
+    int swapped;
+
+    if (*task_queue == NULL)
+    {
+        return;
     }
 
-    // Remove as tarefas atendidas da fila
-    while (*task_queue != NULL && (*task_queue)->disk.block <= *current_head_position)
+    do
     {
-        task_t *temp = *task_queue;
-        *task_queue = (*task_queue)->next;
-        free(temp);
-    }
+        swapped = 0;
+        current = *task_queue;
+        next_task = current->next;
+
+        while (next_task != NULL)
+        {
+            if (current->disk.block > next_task->disk.block)
+            {
+                // Swap
+                temp = *current;
+                *current = *next_task;
+                *next_task = temp;
+
+                swapped = 1;
+            }
+            current = next_task;
+            next_task = next_task->next;
+        }
+    } while (swapped);
+}
+
+void swap_tasks(task_t *task1, task_t *task2)
+{
+    task_t temp = *task1;
+    *task1 = *task2;
+    *task2 = temp;
 }

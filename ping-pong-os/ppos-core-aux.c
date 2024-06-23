@@ -8,11 +8,14 @@
 #include <signal.h>
 
 #define QUANTUM 20
-//#define DEBUG 1
+// #define DEBUG 1
+extern task_t *disk_manager_task;
 
 struct sigaction action;
 struct itimerval timer;
 int time = 0;
+int taskId = 0;
+int primeira = 0;
 
 void task_set_eet(task_t *task, int eet)
 {
@@ -42,44 +45,45 @@ int task_get_ret(task_t *task)
     }
     return task->timeRemaining;
 }
-
 task_t *scheduler()
 {
-
-    task_t *task_return = (task_t *)malloc(sizeof(task_t));
-    task_return = readyQueue;
-    int i;
-    task_t *aux = (task_t *)malloc(sizeof(task_t));
-
-    if (readyQueue != NULL)
+    // Verifica se a fila está vazia
+    if (readyQueue == NULL)
     {
-        if (countTasks > 1)
-        {
-            aux = readyQueue->next;
-        }
-        else
-        {
-            aux = readyQueue;
-        }
-        i = 0;
-        while (i < countTasks)
-        {
-            if (!(aux == taskMain || aux == taskDisp))
-            {
-                if (task_return == readyQueue || task_get_ret(task_return) > task_get_ret(aux))
-                {
-                    task_return = aux;
-                }
-            }
-            aux = aux->next;
-            i++;
-        }
-        return task_return;
+        return readyQueue;
     }
-    free(aux);
-    free(task_return);
-    return readyQueue;
+
+    task_t *task_return = readyQueue;
+    task_t *aux = (task_t *)malloc(sizeof(task_t));
+    int i = 1;
+
+    if (countTasks > 0)
+    {
+        aux = readyQueue->next;
+    }
+    else
+    {
+        aux = readyQueue;
+    }
+    // Itera sobre a fila de tarefas
+    i = 0;
+
+    while (i <= countTasks)
+    {
+        if (aux != taskMain && aux != taskDisp && aux->timeExpected > 0)
+        {
+            if (task_return == readyQueue || task_get_ret(task_return) > task_get_ret(aux))
+            {
+                task_return = aux;
+            }
+        }
+        aux = aux->next;
+        i++;
+    }
+
+    return task_return;
 }
+
 void GerenciadorTempo(int signum)
 {
     systemTime++;
@@ -147,6 +151,12 @@ void after_ppos_init()
 void before_task_create(task_t *task)
 {
     // put your customization here
+    if (task == disk_manager_task)
+    {
+        task->disk.block = 0;
+        task->disk.type = DISK_CMD_READ;
+        printf("ENTRA AQ: %d\n", disk_cmd(DISK_CMD_STATUS, 0, 0));
+    }
 #ifdef DEBUG
     printf("\ntask_create - BEFORE - [%d]", task->id);
 #endif
