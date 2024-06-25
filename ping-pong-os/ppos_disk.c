@@ -30,7 +30,7 @@ void disk_scheduler_cscan();
 
 int compare_disk_operations(const void *a, const void *b);
 
-enum SchedulingAlgorithm current_algorithm = SSTF; // Algoritmo de escalonamento escolhido
+enum SchedulingAlgorithm current_algorithm = FCFS; // Algoritmo de escalonamento escolhido
 
 // Prototipo das funções
 void diskDriverBody(void *args);
@@ -161,9 +161,6 @@ void diskDriverBody(void *args)
             disk_scheduler_cscan();
             break;
         default:
-            break;
-        }
-        // Se o disco estiver livre e houver pedidos de E/S na fila
         if (disk_cmd(DISK_CMD_STATUS, 0, 0) == DISK_STATUS_IDLE && mqueue_msgs(&task_queue) > 0)
         {
             // Escolhe na fila o pedido a ser atendido, usando FCFS
@@ -182,6 +179,10 @@ void diskDriverBody(void *args)
                 current_head_position = operation.disk.block;
             }
         }
+            break;
+        }
+        // Se o disco estiver livre e houver pedidos de E/S na fila
+        
         task_sleep(1);
 
         sem_up(&disk_semaphore);
@@ -197,8 +198,6 @@ void disk_signal_handler(int signal)
     disk_signal_received = 1;
     task_resume(disk_manager_task); // Acorda a tarefa gerente de disco
 }
-
-// PREENCHER COM OS escalonador de requisições de acesso ao disco
 
 void disk_scheduler_sstf()
 {
@@ -282,8 +281,8 @@ void disk_scheduler_cscan()
 
 int compare_disk_operations(const void *a, const void *b)
 {
-    const task_t *op1 = (const task_t *)a;
-    const task_t *op2 = (const task_t *)b;
+    task_t *op1 = (task_t *)a;
+    task_t *op2 = (task_t *)b;
 
     // Comparação por blocos
     if (op1->disk.block < op2->disk.block)
