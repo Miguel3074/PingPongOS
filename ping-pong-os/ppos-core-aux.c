@@ -151,12 +151,6 @@ void after_ppos_init()
 void before_task_create(task_t *task)
 {
     // put your customization here
-    if (task == disk_manager_task)
-    {
-        task->disk.block = 0;
-        task->disk.type = DISK_CMD_READ;
-        printf("ENTRA AQ: %d\n", disk_cmd(DISK_CMD_STATUS, 0, 0));
-    }
 #ifdef DEBUG
     printf("\ntask_create - BEFORE - [%d]", task->id);
 #endif
