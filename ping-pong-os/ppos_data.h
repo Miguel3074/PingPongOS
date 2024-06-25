@@ -10,7 +10,6 @@
 #include <stdio.h>
 #include <ucontext.h> // biblioteca POSIX de trocas de contexto
 #include "queue.h"    // biblioteca de filas genéricas
-#include "ppos_disk.h"// biblioteca do disco
 
 // Estrutura que define um Task Control Block (TCB)
 typedef struct task_t
@@ -33,7 +32,6 @@ typedef struct task_t
     int timeExpected;
     int activations;
     int quantum;
-    disk_t disk;
 } task_t;
 
 // estrutura que define um semáforo

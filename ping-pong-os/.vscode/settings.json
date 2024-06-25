@@ -5,6 +5,7 @@
         "ppos.h": "c",
         "stdlib.h": "c",
         "type_traits": "c",
-        "ppos_disk.h": "c"
+        "ppos_disk.h": "c",
+        "signal.h": "c"
     }
 }
