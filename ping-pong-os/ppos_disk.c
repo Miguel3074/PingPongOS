@@ -1,6 +1,7 @@
 #include "ppos_disk.h" //   gcc -o main ppos_disk.c disk.c ppos.h pingpong-disco1.c ppos-core-aux.c libppos_static.a -lrt   COMANDO
 #include <stdio.h>     //   gcc -o main disk.c ppos.h pingpong-disco1.c ppos-core-aux.c libppos_static.a -lrt
 #include <stdlib.h>
+#include <string.h>
 #include <signal.h>
 
 // Variáveis globais do gerenciador de disco
@@ -81,6 +82,8 @@ int disk_mgr_init(int *numBlocks, int *blockSize)
 
 int disk_block_read(int block, void *buffer)
 {
+    memset(buffer, 0, block_size);
+
     disk_queue *operation = (disk_queue *)malloc(sizeof(disk_queue));
 
     operation->next = NULL;
@@ -173,6 +176,8 @@ void diskDriverBody(void *args)
 
                 // Atualiza a posição do cabeçote após a operação
                 current_head_position = localDisk.task_queue->block;
+
+                // Remove a operação da fila após a conclusão
                 queue_remove((queue_t **)&localDisk.task_queue, (queue_t *)localDisk.task_queue);
             }
         }
@@ -192,7 +197,13 @@ void disk_signal_handler(int signal)
 
 disk_queue *schedule_fcfs(disk_queue *task_aux, int current_head_position, int *blocks_traversed)
 {
-    return task_aux->next;
+    if (task_aux == NULL) {
+        return NULL;  // Se a fila estiver vazia, retorna NULL
+    }
+
+    disk_queue *first_task = task_aux;  // Pega a primeira tarefa na fila
+
+    return first_task;  // Retorna a primeira tarefa para processamento
 }
 
 disk_queue *schedule_sstf(disk_queue *task_aux, int current_head_position, int *blocks_traversed)
