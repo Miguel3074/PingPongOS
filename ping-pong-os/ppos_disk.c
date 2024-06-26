@@ -1,7 +1,8 @@
 #include "ppos_disk.h" //   gcc -o main ppos_disk.c disk.c ppos.h pingpong-disco1.c ppos-core-aux.c libppos_static.a -lrt   COMANDO
 #include <stdio.h>     //   gcc -o main disk.c ppos.h pingpong-disco1.c ppos-core-aux.c libppos_static.a -lrt
 #include <stdlib.h>
-#include <string.h>
+#include <limits.h>
+#include "ppos-core-globals.h"
 #include <signal.h>
 
 // Variáveis globais do gerenciador de disco
@@ -82,14 +83,15 @@ int disk_mgr_init(int *numBlocks, int *blockSize)
 
 int disk_block_read(int block, void *buffer)
 {
-    memset(buffer, 0, block_size);
 
     disk_queue *operation = (disk_queue *)malloc(sizeof(disk_queue));
 
+    operation->task = taskExec;
     operation->next = NULL;
     operation->type = DISK_CMD_READ;
     operation->block = block;
     operation->buffer = buffer;
+
     // Obtém o semáforo de acesso ao disco
     sem_down(&disk_semaphore);
 
@@ -101,6 +103,7 @@ int disk_block_read(int block, void *buffer)
 
     // Libera o semáforo de acesso ao disco
     task_yield();
+
     return 0;
 }
 
@@ -108,6 +111,7 @@ int disk_block_write(int block, void *buffer)
 {
     disk_queue *operation = (disk_queue *)malloc(sizeof(disk_queue));
 
+    operation->task = taskExec;
     operation->next = NULL;
     operation->type = DISK_CMD_WRITE;
     operation->block = block;
@@ -122,7 +126,7 @@ int disk_block_write(int block, void *buffer)
     // Se o gerente de disco está dormindo, acorda-o
     task_resume(disk_manager_task);
 
-    // Libera o semáforo de acesso ao disco
+    // Suspende a tarefa corrente para que o gerente de disco possa executar
     task_yield();
 
     return 0;
@@ -130,21 +134,24 @@ int disk_block_write(int block, void *buffer)
 
 void diskDriverBody(void *args)
 {
+
     while (1)
     {
         sem_down(&disk_semaphore);
-
+        if (readyQueue == taskMain)
+        {
+            readyQueue = readyQueue->next;
+        }
         // Se foi acordado devido a um sinal do disco
         if (disk_signal_received)
         {
             disk_signal_received = 0;
-            printf("Disk signal\n");
-            // disk_t *operation = &localDisk.task_queue;
-            // task_resume(operation);
-
-            // // Remove a operação da fila e libera a memória alocada para a operação
-            // queue_remove((queue_t **)&localDisk.task_queue, (queue_t *)operation);
-            // free(operation);
+            // acorda a tarefa cujo pedido foi atendido
+            if (localDisk.task_queue)
+            {
+                task_resume(localDisk.task_queue->task);
+                queue_remove((queue_t **)&localDisk.task_queue, (queue_t *)localDisk.task_queue);
+            }
         }
 
         switch (current_algorithm)
@@ -157,9 +164,6 @@ void diskDriverBody(void *args)
             break;
         case CSCAN:
             (localDisk.task_queue) = schedule_cscan(localDisk.task_queue, current_head_position, &blocks_traversed, num_blocks);
-            break;
-        default:
-            // Algoritmo de escalonamento inválido
             break;
         }
 
@@ -176,9 +180,6 @@ void diskDriverBody(void *args)
 
                 // Atualiza a posição do cabeçote após a operação
                 current_head_position = localDisk.task_queue->block;
-
-                // Remove a operação da fila após a conclusão
-                queue_remove((queue_t **)&localDisk.task_queue, (queue_t *)localDisk.task_queue);
             }
         }
 
@@ -197,73 +198,91 @@ void disk_signal_handler(int signal)
 
 disk_queue *schedule_fcfs(disk_queue *task_aux, int current_head_position, int *blocks_traversed)
 {
-    if (task_aux == NULL) {
-        return NULL;  // Se a fila estiver vazia, retorna NULL
+    if (task_aux == NULL)
+    {
+        return NULL; // Se a fila estiver vazia, retorna NULL
     }
 
-    disk_queue *first_task = task_aux;  // Pega a primeira tarefa na fila
-
-    return first_task;  // Retorna a primeira tarefa para processamento
+    return task_aux; // Retorna a primeira tarefa para processamento
 }
 
 disk_queue *schedule_sstf(disk_queue *task_aux, int current_head_position, int *blocks_traversed)
 {
-    // SSTF - Shortest Seek Time First
-    if (!task_aux)
-        return NULL;
-
-    disk_queue *shortest_seek = task_aux;
-    disk_queue *iterator = task_aux->next;
-    int min_seek = abs(shortest_seek->block - current_head_position);
-
-    while (iterator != task_aux)
+    if (task_aux == NULL)
     {
-        int seek_time = abs(iterator->block - current_head_position);
-        if (seek_time < min_seek)
+        return NULL; // Se a fila estiver vazia, retorna NULL
+    }
+
+    disk_queue *selected_task = NULL;
+    disk_queue *current_task = task_aux;
+    int min_distance = INT_MAX; // Inicializa com o maior valor possível
+
+    // Percorre a fila para encontrar o próximo bloco com a menor distância do cabeçote
+    while (current_task != NULL)
+    {
+        int distance = abs(current_task->block - current_head_position);
+        if (distance < min_distance)
         {
-            min_seek = seek_time;
-            shortest_seek = iterator;
+            min_distance = distance;
+            selected_task = current_task;
         }
-        iterator = iterator->next;
+        current_task = current_task->next;
     }
 
-    if (shortest_seek != task_aux)
-    {
-        queue_remove((queue_t **)&task_aux, (queue_t *)shortest_seek);
-        queue_append((queue_t **)&task_aux, (queue_t *)shortest_seek);
-    }
+    // Atualiza o número de blocos percorridos (opcional)
+    *blocks_traversed += min_distance;
 
-    return task_aux;
+    // Retorna a tarefa selecionada para processamento
+    return selected_task;
 }
-
 disk_queue *schedule_cscan(disk_queue *task_aux, int current_head_position, int *blocks_traversed, int num_blocks)
 {
-    // CSCAN - Circular SCAN
-    if (!task_aux)
-        return NULL;
-
-    disk_queue *start = task_aux;
-    disk_queue *iterator = task_aux->next;
-
-    while (iterator != start)
+    if (task_aux == NULL)
     {
-        if (iterator->block < start->block)
-            start = iterator;
-        iterator = iterator->next;
+        return NULL; // Se a fila estiver vazia, retorna NULL
     }
 
-    iterator = start;
+    disk_queue *selected_task = NULL;
+    disk_queue *current_task = task_aux;
+    int min_distance = INT_MAX; // Inicializa com o maior valor possível
 
-    do
+    // Percorre a fila para encontrar o próximo bloco com a menor distância no sentido crescente
+    while (current_task != NULL)
     {
-        if (iterator->block >= current_head_position)
+        if (current_task->block >= current_head_position)
         {
-            queue_remove((queue_t **)&task_aux, (queue_t *)iterator);
-            queue_append((queue_t **)&task_aux, (queue_t *)iterator);
-            break;
+            int distance = current_task->block - current_head_position;
+            if (distance < min_distance)
+            {
+                min_distance = distance;
+                selected_task = current_task;
+            }
         }
-        iterator = iterator->next;
-    } while (iterator != start);
+        current_task = current_task->next;
+    }
 
-    return task_aux;
+    // Se não encontrou nenhum bloco no sentido crescente, procura no sentido circular
+    if (selected_task == NULL)
+    {
+        current_task = task_aux;
+        while (current_task != NULL)
+        {
+            if (current_task->block < current_head_position)
+            {
+                int distance = (num_blocks - current_head_position) + current_task->block;
+                if (distance < min_distance)
+                {
+                    min_distance = distance;
+                    selected_task = current_task;
+                }
+            }
+            current_task = current_task->next;
+        }
+    }
+
+    // Atualiza o número de blocos percorridos (opcional)
+    *blocks_traversed += min_distance;
+
+    // Retorna a tarefa selecionada para processamento
+    return selected_task;
 }

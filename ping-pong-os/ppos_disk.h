@@ -31,7 +31,7 @@ typedef struct disk_queue
 {
   struct disk_queue *prev;
   struct disk_queue *next;
-  task_t *task;
+  task_t *task; // Tarefa associada à operação de disco
   int type;     // Tipo da operação (leitura ou escrita)
   int block;    // Número do bloco a ser lido ou escrito
   void *buffer; // Buffer de dados para leitura ou escrita

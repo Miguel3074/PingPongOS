@@ -45,6 +45,7 @@ int task_get_ret(task_t *task)
     }
     return task->timeRemaining;
 }
+
 task_t *scheduler()
 {
     // Verifica se a fila está vazia
@@ -54,21 +55,10 @@ task_t *scheduler()
     }
 
     task_t *task_return = readyQueue;
-    task_t *aux = (task_t *)malloc(sizeof(task_t));
-    int i = 1;
+    task_t *aux = readyQueue->next;
 
-    if (countTasks > 0)
-    {
-        aux = readyQueue->next;
-    }
-    else
-    {
-        aux = readyQueue;
-    }
     // Itera sobre a fila de tarefas
-    i = 0;
-
-    while (i <= countTasks)
+    while (aux != readyQueue)
     {
         if (aux != taskMain && aux != taskDisp && aux->timeExpected > 0)
         {
@@ -78,7 +68,6 @@ task_t *scheduler()
             }
         }
         aux = aux->next;
-        i++;
     }
 
     return task_return;
