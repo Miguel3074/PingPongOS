@@ -1,0 +1,26 @@
+# Makefile para compilar e executar main2
+
+CC = gcc
+CFLAGS = -Wall -pthread
+LIBS = -lrt -lm
+
+main2: ppos_disk.o disk.o pingpong-disco2.o ppos-core-aux.o libppos_static.a
+	$(CC) -o main2 ppos_disk.o disk.o pingpong-disco2.o ppos-core-aux.o libppos_static.a $(LIBS)
+
+ppos_disk.o: ppos_disk.c
+	$(CC) $(CFLAGS) -c ppos_disk.c
+
+disk.o: disk.c
+	$(CC) $(CFLAGS) -c disk.c
+
+pingpong-disco2.o: pingpong-disco2.c
+	$(CC) $(CFLAGS) -c pingpong-disco2.c
+
+ppos-core-aux.o: ppos-core-aux.c
+	$(CC) $(CFLAGS) -c ppos-core-aux.c
+
+libppos_static.a: libppos_static.a
+	# Comando para criar libppos_static.a se necessário
+
+clean:
+	rm -f *.o main2

@@ -1,5 +1,5 @@
-#include "ppos_disk.h" //   gcc -o main ppos_disk.c disk.c ppos.h pingpong-disco1.c ppos-core-aux.c libppos_static.a -lrt   COMANDO
-#include <stdio.h>     //   gcc -o main disk.c ppos.h pingpong-disco1.c ppos-core-aux.c libppos_static.a -lrt
+#include "ppos_disk.h" //   make -f Makefile1
+#include <stdio.h>     //   make -f Makefile2
 #include <stdlib.h>
 #include <limits.h>
 #include "ppos-core-globals.h"
@@ -22,7 +22,7 @@ enum SchedulingAlgorithm
     CSCAN
 };
 
-enum SchedulingAlgorithm current_algorithm = CSCAN; // Algoritmo de escalonamento escolhido
+enum SchedulingAlgorithm current_algorithm = FCFS; // Algoritmo de escalonamento escolhido
 
 // Prototipo das funções
 void diskDriverBody(void *args);
