@@ -22,7 +22,7 @@ enum SchedulingAlgorithm
     CSCAN
 };
 
-enum SchedulingAlgorithm current_algorithm = FCFS; // Algoritmo de escalonamento escolhido
+enum SchedulingAlgorithm current_algorithm = CSCAN; // Algoritmo de escalonamento escolhido
 
 // Prototipo das funções
 void diskDriverBody(void *args);
@@ -32,7 +32,7 @@ disk_queue *schedule_fcfs(disk_queue *task_aux, int current_head_position);
 
 disk_queue *schedule_sstf(disk_queue *task_aux, int current_head_position);
 
-disk_queue *schedule_cscan(disk_queue *task_aux, int current_head_position, int num_blocks);
+disk_queue *schedule_cscan(disk_queue *task_aux, int current_head_position);
 
 int disk_mgr_init(int *numBlocks, int *blockSize)
 {
@@ -175,7 +175,7 @@ void diskDriverBody(void *args)
                 (localDisk.task_queue) = schedule_sstf(localDisk.task_queue, current_head_position);
                 break;
             case CSCAN:
-                (localDisk.task_queue) = schedule_cscan(localDisk.task_queue, current_head_position, num_blocks);
+                (localDisk.task_queue) = schedule_cscan(localDisk.task_queue, current_head_position);
                 break;
             }
 
@@ -248,7 +248,7 @@ disk_queue *schedule_sstf(disk_queue *task_aux, int current_head_position)
     return selected_task; // Retorna a tarefa mais próxima em termos de distância de busca
 }
 
-disk_queue *schedule_cscan(disk_queue *task_aux, int current_head_position, int num_blocks)
+disk_queue *schedule_cscan(disk_queue *task_aux, int current_head_position)
 {
     if (task_aux == NULL)
     {
@@ -257,7 +257,6 @@ disk_queue *schedule_cscan(disk_queue *task_aux, int current_head_position, int 
 
     disk_queue *selected_task = task_aux;
     disk_queue *temp_task = task_aux->next;
-    int min_block = num_blocks;
     int closest_cscan_distance = num_blocks * 2;
     int forward_tracks = 0;
 
@@ -300,9 +299,7 @@ disk_queue *schedule_cscan(disk_queue *task_aux, int current_head_position, int 
         }
     }
 
-    printf("%d\n",closest_cscan_distance);
-    // Atualiza o número de blocos percorridos com a distância percorrida pela operação selecionada
-    blocks_traversed += closest_cscan_distance;
+    blocks_traversed += abs(task_aux->block - current_head_position);
 
     return selected_task; // Retorna a tarefa com a menor distância no sentido crescente no CSCAN
 }
