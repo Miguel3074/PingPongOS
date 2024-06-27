@@ -28,11 +28,11 @@ enum SchedulingAlgorithm current_algorithm = FCFS; // Algoritmo de escalonamento
 void diskDriverBody(void *args);
 void disk_signal_handler(int signal);
 
-disk_queue *schedule_fcfs(disk_queue *task_aux, int current_head_position, int *blocks_traversed);
+disk_queue *schedule_fcfs(disk_queue *task_aux, int current_head_position);
 
-disk_queue *schedule_sstf(disk_queue *task_aux, int current_head_position, int *blocks_traversed);
+disk_queue *schedule_sstf(disk_queue *task_aux, int current_head_position);
 
-disk_queue *schedule_cscan(disk_queue *task_aux, int current_head_position, int *blocks_traversed, int num_blocks);
+disk_queue *schedule_cscan(disk_queue *task_aux, int current_head_position, int num_blocks);
 
 int disk_mgr_init(int *numBlocks, int *blockSize)
 {
@@ -102,7 +102,7 @@ int disk_block_read(int block, void *buffer)
 
     // Se o gerente de disco está dormindo, acorda-o
     task_resume(disk_manager_task);
-    
+
     task_suspend(taskExec, &localDisk.disk_wait_queue);
     // Libera o semáforo de acesso ao disco
     task_yield();
@@ -126,13 +126,14 @@ int disk_block_write(int block, void *buffer)
     // Adiciona a operação à fila de operações do disco
     queue_append((queue_t **)&localDisk.task_queue, (queue_t *)operation);
 
+    // Libera o semáforo de acesso ao disco
     sem_up(&disk_semaphore);
 
     // Se o gerente de disco está dormindo, acorda-o
     task_resume(disk_manager_task);
-    
+
     task_suspend(taskExec, &localDisk.disk_wait_queue);
-    // Libera o semáforo de acesso ao disco
+
     task_yield();
 
     return 0;
@@ -160,24 +161,23 @@ void diskDriverBody(void *args)
             }
         }
 
-        switch (current_algorithm)
-        {
-        case FCFS:
-            (localDisk.task_queue) = schedule_fcfs(localDisk.task_queue, current_head_position, &blocks_traversed);
-            break;
-        case SSTF:
-            (localDisk.task_queue) = schedule_sstf(localDisk.task_queue, current_head_position, &blocks_traversed);
-            break;
-        case CSCAN:
-            (localDisk.task_queue) = schedule_cscan(localDisk.task_queue, current_head_position, &blocks_traversed, num_blocks);
-            break;
-        }
-
         // Consulta o status do disco
         int disk_status = disk_cmd(DISK_CMD_STATUS, 0, 0);
         // Se o disco estiver livre e houver pedidos de E/S na fila
         if (disk_status == DISK_STATUS_IDLE && localDisk.task_queue)
         {
+            switch (current_algorithm)
+            {
+            case FCFS:
+                (localDisk.task_queue) = schedule_fcfs(localDisk.task_queue, current_head_position);
+                break;
+            case SSTF:
+                (localDisk.task_queue) = schedule_sstf(localDisk.task_queue, current_head_position);
+                break;
+            case CSCAN:
+                (localDisk.task_queue) = schedule_cscan(localDisk.task_queue, current_head_position, num_blocks);
+                break;
+            }
 
             // Solicita ao disco a operação de E/S, usando disk_cmd()
             if (localDisk.task_queue->type == DISK_CMD_WRITE || localDisk.task_queue->type == DISK_CMD_READ)
@@ -189,7 +189,7 @@ void diskDriverBody(void *args)
             }
         }
 
-        //task_sleep(1);
+        // task_sleep(1);
         sem_up(&disk_semaphore);
         // Suspende a tarefa corrente (retorna ao dispatcher)
         task_yield();
@@ -202,93 +202,90 @@ void disk_signal_handler(int signal)
     task_resume(disk_manager_task); // Acorda a tarefa gerente de disco
 }
 
-disk_queue *schedule_fcfs(disk_queue *task_aux, int current_head_position, int *blocks_traversed)
+disk_queue *schedule_fcfs(disk_queue *task_aux, int current_head_position)
 {
     if (task_aux == NULL)
     {
         return NULL; // Se a fila estiver vazia, retorna NULL
     }
+
+    // Calcula a distância entre a posição atual do cabeçote e o bloco da próxima operação
+
+    blocks_traversed += abs(task_aux->block - current_head_position);
+
+    printf("Blocos percorridos: %d\n", blocks_traversed); // Exibe o número de blocos percorridos
 
     return task_aux; // Retorna a primeira tarefa para processamento
 }
-
-disk_queue *schedule_sstf(disk_queue *task_aux, int current_head_position, int *blocks_traversed)
+disk_queue *schedule_sstf(disk_queue *task_aux, int current_head_position)
 {
     if (task_aux == NULL)
     {
         return NULL; // Se a fila estiver vazia, retorna NULL
     }
 
-    disk_queue *selected_task = NULL;
-    disk_queue *current_task = task_aux;
-    int min_distance = INT_MAX; // Inicializa com o maior valor possível
+    disk_queue *selected_task = task_aux;
+    disk_queue *temp_task = task_aux->next;
+    int shortest_distance = abs(task_aux->block - current_head_position);
 
-    // Percorre a fila para encontrar o próximo bloco com a menor distância do cabeçote
-    while (current_task != NULL)
+    // Percorre a lista circular de tarefas procurando pela tarefa mais próxima
+    while (temp_task != task_aux)
     {
-        int distance = abs(current_task->block - current_head_position);
-        if (distance < min_distance)
+        int distance = abs(temp_task->block - current_head_position);
+
+        // Se encontrou uma tarefa mais próxima, atualiza a tarefa selecionada e a menor distância
+        if (distance < shortest_distance)
         {
-            min_distance = distance;
-            selected_task = current_task;
+            selected_task = temp_task;
+            shortest_distance = distance;
         }
-        current_task = current_task->next;
+
+        temp_task = temp_task->next;
     }
 
-    // Atualiza o número de blocos percorridos (opcional)
-    *blocks_traversed += min_distance;
+    blocks_traversed += shortest_distance; // Atualiza o número de blocos percorridos
 
-    // Retorna a tarefa selecionada para processamento
-    return selected_task;
+    printf("Blocos percorridos: %d\n", blocks_traversed); // Exibe o número de blocos percorridos
+
+    return selected_task; // Retorna a tarefa mais próxima em termos de distância de busca
 }
-disk_queue *schedule_cscan(disk_queue *task_aux, int current_head_position, int *blocks_traversed, int num_blocks)
+
+disk_queue *schedule_cscan(disk_queue *task_aux, int current_head_position, int num_blocks)
 {
     if (task_aux == NULL)
     {
         return NULL; // Se a fila estiver vazia, retorna NULL
     }
 
-    disk_queue *selected_task = NULL;
-    disk_queue *current_task = task_aux;
-    int min_distance = INT_MAX; // Inicializa com o maior valor possível
+    disk_queue *selected_task = task_aux;
+    disk_queue *temp_task = task_aux->next;
+    int min_block = num_blocks;
+    int closest_cscan_distance = num_blocks * 2;
 
-    // Percorre a fila para encontrar o próximo bloco com a menor distância no sentido crescente
-    while (current_task != NULL)
+    // Percorre a lista circular de tarefas procurando pela tarefa com a menor distância no sentido crescente
+    while (temp_task != task_aux)
     {
-        if (current_task->block >= current_head_position)
+        int distance = temp_task->block - current_head_position;
+
+        // Se a distância for negativa, calcula a distância positiva considerando a volta circular do disco
+        if (distance < 0)
         {
-            int distance = current_task->block - current_head_position;
-            if (distance < min_distance)
-            {
-                min_distance = distance;
-                selected_task = current_task;
-            }
+            distance += num_blocks;
         }
-        current_task = current_task->next;
+
+        // Se encontrou uma tarefa com menor distância no sentido crescente, atualiza a tarefa selecionada
+        if (distance < closest_cscan_distance)
+        {
+            closest_cscan_distance = distance;
+            selected_task = temp_task;
+        }
+
+        temp_task = temp_task->next;
     }
 
-    // Se não encontrou nenhum bloco no sentido crescente, procura no sentido circular
-    if (selected_task == NULL)
-    {
-        current_task = task_aux;
-        while (current_task != NULL)
-        {
-            if (current_task->block < current_head_position)
-            {
-                int distance = (num_blocks - current_head_position) + current_task->block;
-                if (distance < min_distance)
-                {
-                    min_distance = distance;
-                    selected_task = current_task;
-                }
-            }
-            current_task = current_task->next;
-        }
-    }
+    blocks_traversed += closest_cscan_distance; // Atualiza o número de blocos percorridos
 
-    // Atualiza o número de blocos percorridos (opcional)
-    *blocks_traversed += min_distance;
+    printf("Blocos percorridos: %d\n", blocks_traversed); 
 
-    // Retorna a tarefa selecionada para processamento
-    return selected_task;
+    return selected_task; // Retorna a tarefa com a menor distância no sentido crescente no CSCAN
 }
