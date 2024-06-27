@@ -98,9 +98,12 @@ int disk_block_read(int block, void *buffer)
     // Adiciona a operação à fila de operações do disco
     queue_append((queue_t **)&localDisk.task_queue, (queue_t *)operation);
 
+    sem_up(&disk_semaphore);
+
     // Se o gerente de disco está dormindo, acorda-o
     task_resume(disk_manager_task);
-
+    
+    task_suspend(taskExec, &localDisk.disk_wait_queue);
     // Libera o semáforo de acesso ao disco
     task_yield();
 
@@ -123,10 +126,13 @@ int disk_block_write(int block, void *buffer)
     // Adiciona a operação à fila de operações do disco
     queue_append((queue_t **)&localDisk.task_queue, (queue_t *)operation);
 
+    sem_up(&disk_semaphore);
+
     // Se o gerente de disco está dormindo, acorda-o
     task_resume(disk_manager_task);
-
-    // Suspende a tarefa corrente para que o gerente de disco possa executar
+    
+    task_suspend(taskExec, &localDisk.disk_wait_queue);
+    // Libera o semáforo de acesso ao disco
     task_yield();
 
     return 0;
@@ -183,7 +189,7 @@ void diskDriverBody(void *args)
             }
         }
 
-        task_sleep(1);
+        //task_sleep(1);
         sem_up(&disk_semaphore);
         // Suspende a tarefa corrente (retorna ao dispatcher)
         task_yield();

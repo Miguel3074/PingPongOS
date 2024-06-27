@@ -8,7 +8,7 @@
 #include <signal.h>
 
 #define QUANTUM 20
-// #define DEBUG 1
+//#define DEBUG 1
 extern task_t *disk_manager_task;
 
 struct sigaction action;
@@ -55,11 +55,12 @@ task_t *scheduler()
     }
 
     task_t *task_return = readyQueue;
-    task_t *aux = readyQueue->next;
+    task_t *aux = readyQueue;
 
     // Itera sobre a fila de tarefas
     while (aux != readyQueue)
     {
+
         if (aux != taskMain && aux != taskDisp && aux->timeExpected > 0)
         {
             if (task_return == readyQueue || task_get_ret(task_return) > task_get_ret(aux))
@@ -69,7 +70,6 @@ task_t *scheduler()
         }
         aux = aux->next;
     }
-
     return task_return;
 }
 
